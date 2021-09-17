@@ -14,13 +14,14 @@
 	// real dpHR = 0.0025; //temp
 	// //real dpHR = 0.005; //temp
 
-	real dt = 0.0001; //temp
+	//real dt = 0.0001; //temp
+	real dt = 0.00005; //temp
 	real kap = 1.;
 
 	unsigned int save_output_interval = 25; //temp, default 25
 	unsigned int save_output_interval_interpolated = 1000;
 	unsigned int step = 0; //Time in steps
-	unsigned int step_end = 5001; //Endtime in steps;
+	unsigned int step_end = 10001; //Endtime in steps;
 
  std::string output_file_name = "results/particles_";
 	//std::string output_file_name_p_out = "p_out/particles_";
@@ -42,7 +43,7 @@
 
 	/*** Help & temp variables ***/
 
-	double hh = 1*sqrt(2*dp*dp);
+	double hh = 1.1*sqrt(2*dp*dp);
 	//double hh = 0.02;
 	int nvl = std::ceil(kap*hh/dp);
 

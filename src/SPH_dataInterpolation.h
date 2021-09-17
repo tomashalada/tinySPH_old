@@ -7,6 +7,9 @@
 
 #include "SPH_grid_to_vtk.h"
 
+//dev
+#include "testing.h"
+
 void GenerateInterpol
 (Particle_system &particles, Simulation_data simulation_data, std::string filename, real x0, real y0, real xm, real ym)
 {
@@ -53,7 +56,11 @@ void GenerateInterpol
 		//pos[POS(x, y, ncx, ncy)] = r;
 		//pos[POS(x,y,ncx,ncy)] = r;
 
-		vel[POS(x, y, ncx, ncy)] = Kernel_velocity_approximation_with_mass(particles, simulation_data, r);
+		//vel[POS(x, y, ncx, ncy)] = Kernel_velocity_approximation_with_mass(particles, simulation_data, r);
+		vel[POS(x, y, ncx, ncy)] = Kernel_velocity_approximation_TEST(particles, simulation_data, r);
+
+
+
 		//vel[POS(y, x, ncx, ncy)].y = Kernel_velocity_approximation(particles, simulation_data, r).x;
 		//vel[POS(x, y, ncx, ncy)].x = POS(x, y, ncx, ncy);
 		//vel[POS(x, y, ncx, ncy)].y = POS(y, x, ncx, ncy);

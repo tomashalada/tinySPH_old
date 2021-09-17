@@ -1,3 +1,5 @@
+#pragma once
+
 #include "SPH_defs.h"
 
 /* Artificial viscosity */

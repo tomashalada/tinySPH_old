@@ -1321,8 +1321,8 @@ real Kernel_density_approximation_MATRIX_mDBC
 	//Compute ghost note velocity
 	dens_temp = rhoWsum*a11inv + drhodx*a12inv + drhody*a13inv;
 
-	real grx = rhoWsum*a21inv + drhodx*a22inv + drhody*a23inv;
-	real gry = rhoWsum*a31inv + drhodx*a32inv + drhody*a33inv;
+	real grx = -(rhoWsum*a21inv + drhodx*a22inv + drhody*a23inv);
+	real gry = -(rhoWsum*a31inv + drhodx*a32inv + drhody*a33inv);
 
 	dens =( dens_temp + grx*gnd.x + gry*gnd.y);
 

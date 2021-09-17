@@ -43,18 +43,18 @@
 
 	/*** Help & temp variables ***/
 
-	double hh = 1*sqrt(2*dp*dp);
+	double hh = 1.1*sqrt(2*dp*dp);
 	//double hh = 0.02;
 	int nvl = std::ceil(kap*hh/dp);
 
 // OUTPUT FILES AND DIRECTORIES
-std::string casePATH = "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/damBreak/";
+std::string casePATH = "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/simpleFlowSr_mdbcLattice/";
 
 std::string fileName_resultsFluidOnly = casePATH + "OUTPUT/resultsFluidOnly/partFluidOnly_";
 
 std::string fileName_resultsAll = casePATH + "OUTPUT/resultsAll/partAll_";
 
-std::string fileName_resultsInterpol = casePATH + "OUTPUT/resultsInterpolated/fieldInterpolated_";
+std::string fileName_resultsInterpol = casePATH + "OUTPUT/resultsInterpolated/fieldInterpolatedTESTsFINE_";
 
 std::string fileName_initCond = casePATH + "OUTPUT/initialCondition.vtk";
 

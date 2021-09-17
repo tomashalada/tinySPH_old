@@ -43,12 +43,12 @@
 
 	/*** Help & temp variables ***/
 
-	double hh = 1*sqrt(2*dp*dp);
+	double hh = 1.1*sqrt(2*dp*dp);
 	//double hh = 0.02;
 	int nvl = std::ceil(kap*hh/dp);
 
 // OUTPUT FILES AND DIRECTORIES
-std::string casePATH = "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/damBreak/";
+std::string casePATH = "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/simpleFlowSr_bt/";
 
 std::string fileName_resultsFluidOnly = casePATH + "OUTPUT/resultsFluidOnly/partFluidOnly_";
 

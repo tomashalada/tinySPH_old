@@ -610,3 +610,38 @@ void Create_corner_mdbc(Particle_system & particles, int orientationX, int orien
 	}
 
 }
+
+void Create_Wall_x_lattice(Particle_system & particles, double x_0, double x_1, double y, int orientation)
+// orientation +1: -1:
+{
+	real dp = particles.data_const.dp;
+	real kh = particles.data_const.h * particles.data_const.kap;
+	realvec r, v, a;
+
+	//gets length of wall line and number of particles for the wall
+	real len = LEN(x_0, y, x_1, y);
+	int npart = (int)(len/dp);
+	/*if(modulo != 0){Delka hrany nekoresponduje se zadanym NP}*/
+
+	// number of virtual layers
+	int nvl = std::ceil(kh/dp) +1; //+1 tempfor asdasd
+	//nvl = 1;
+
+	for(int l = 0; l < nvl; l++)
+	{
+
+		r.y = y + dp*l*orientation/2;
+
+		for(int i = 0; i < npart+1; i++)
+		{
+			if(l%2 == 0){r.x = x_0 + i*dp + dp/2;}
+			else{r.x = x_0 + i*dp;}
+
+			v.x = 0; v.y = 0;
+			a.x = 0; a.y = 0;
+
+			particles.Add_particle(wall, 0, particles.data_const.rho0, r, v, a);
+		}
+	}
+
+}

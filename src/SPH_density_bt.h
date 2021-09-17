@@ -5,7 +5,7 @@
 #include "SPH_kernel.h"
 
 
-void Compute_Density
+void Compute_Density_BT
 (Particle_system &particles)
 {
 
@@ -13,13 +13,6 @@ void Compute_Density
 	unsigned int ncx, ncy;
 	ncx = particles.pairs.ncx;
 	ncy = particles.pairs.ncy;
-
-	//Indices of neigbour cells
-	//idx zz, zp, pp, pz, pm, zm, mm, mz, mp;
-	//std::vector<int> ac;
-
-		/* Debug */
-		//std::cout << "DENSITY -> GLOBAL: drho_temp len: " << particles.data.drho.size() << " rho len: " << particles.data.rho.size() << std::endl;
 
 	#pragma omp parallel for
 	for(int c = 0; c < particles.cells.size(); c++)
@@ -47,6 +40,7 @@ void Compute_Density
 		//Temp. data, temp. variable
 		real drho_temp = 0;
 		real dt_temp = 0;
+		real gamma = 0;
 
 		/*
 		real drs; //dr size
@@ -58,6 +52,7 @@ void Compute_Density
 		real m = particles.data_const.m;
 		real delta = particles.data_const.delta;
 		real c0 = particles.data_const.cs;
+		real dp = particles.data_const.dp;
 
 		/*
 		realvec ar; //position of ative particle
@@ -108,18 +103,7 @@ void Compute_Density
 				for(int n = 0; n < particles.cells[cl].np; n++)
 				{
 
-					/*
-				if(particles.data.part_type[particles.cells[cl].cp[n]] == outletf){continue;}
 
-				if(particles.data.part_type[particles.cells[zz].cp[i]] == wall &&
-							particles.data.part_type[particles.cells[cl].cp[n]] == inlet) {continue;}
-
-				if(particles.data.part_type[particles.cells[zz].cp[i]] == wall &&
-							particles.data.part_type[particles.cells[cl].cp[n]] == outlet) {continue;}
-
-				if(particles.data.part_type[particles.cells[zz].cp[i]] == wall &&
-							particles.data.part_type[particles.cells[cl].cp[n]] == outletf) {continue;}
-							*/
 
 				//if(particles.data.part_type[particles.cells[zz].cp[i]] == wall &&
 				//			particles.data.part_type[particles.cells[cl].cp[n]] == wall) {continue;}
@@ -137,9 +121,12 @@ void Compute_Density
 				real dvdW; //vect(v) \cdot \nabla W
 				realvec dr, dv;
 
+				real W = 0;
+
 				//dif. term
 				realvec Psi;
 				real PsidW;
+
 
 
 				//Load data of neighbour particle
@@ -155,13 +142,42 @@ void Compute_Density
 				/* get kernel values
 				double *Wendland_kernel(double r, double h) */
 				kernel = Wendland_kernel(drs, h);
+				W = kernel[0];
 				dW = dr * kernel[1]; // <--- check this, if its ok
 				dvdW = dv.x*dW.x + dv.y*dW.y;
 
+				//std::cout << "Normal loading... " << std::endl;
+
+				if(particles.data.part_type[particles.cells[cl].cp[n]] == wall)
+				{
+
+					realvec nb = {0., 0.};
+					nb = particles.special.n[particles.cells[cl].cp[n]];
+
+					real dvn = 0;
+					//dvn = nv.x*nb.x + nv.y*nb.y;
+					dvn = dv.x*nb.x + dv.y*nb.y;
+
+					//drho_temp -= arho*dvn*W*dp;
+					drho_temp -=  nrho*dvn*W*dp;
+					//std::cout << "Normal loaded. DONE. n = [ " << nb.x << "," << nb.y << " ] dv = [ " << dv.x << "," << dv.y << " ] drho_temp: " << drho_temp << " nrhp: " << nrho << std::endl;
+
+				}
+				else
+				{
+
+					drho_temp += dvdW*m;
+
+				}
+				//std::cout << "Normal loaded. DONE. n = [ " << nb.x << "," << nb.y << " ]drho_temp: " << drho_temp << " nrhp: " << nrho << std::endl;
+
+				gamma += W*m/nrho;
+
+
 				/*  compute diffusive term */
-				Psi.x =  (dr.x / (pow(drs,2) + eps*h*h))* 2 * (nrho - arho);
-				Psi.y =  (dr.y / (pow(drs,2) + eps*h*h))* 2 * (nrho - arho);
-				PsidW = Psi.x*dW.x + Psi.y*dW.y;
+				//Psi.x =  (dr.x / (pow(drs,2) + eps*h*h))* 2 * (nrho - arho);
+				//Psi.y =  (dr.y / (pow(drs,2) + eps*h*h))* 2 * (nrho - arho);
+				//PsidW = Psi.x*dW.x + Psi.y*dW.y;
 
 				/* Debug */
 				//if(abs(kernel[1]) > 0.0001)
@@ -184,8 +200,7 @@ void Compute_Density
 				//}
 
 				//drho_temp += dvdW*m/nrho;
-				drho_temp += dvdW*m;
-				dt_temp += h*delta*c0*PsidW * m/ nrho;
+				//dt_temp += h*delta*c0*PsidW * m/ nrho;
 
 
 				/* Debug */
@@ -216,9 +231,27 @@ void Compute_Density
 			//std::cout << "DENSITY -> Assign drho_temp was SUCCESSFUL. drho_temp: " << drho_temp <<  " dt_temp: " << dt_temp << std::endl;
 
 			//particles.data.drho[particles.cells[zz].cp[i]] = drho_temp*arho;
-			particles.data.drho[particles.cells[zz].cp[i]] = drho_temp - dt_temp;
+			//particles.data.drho[particles.cells[zz].cp[i]] = drho_temp - dt_temp;
+			//std::cout << "Assing = " << gamma << std::endl;
+
+			if(gamma == 0)
+			{
+
+				//particles.data.drho[particles.cells[zz].cp[i]] = 1000.;
+				particles.data.drho[particles.cells[zz].cp[i]] = 0.;
+
+			}
+			else
+			{
+
+				particles.data.drho[particles.cells[zz].cp[i]] = drho_temp/gamma; //normalize
+
+			}
 			drho_temp = 0;
 			dt_temp = 0;
+			gamma = 0;
+
+			//std::cout << "..assigned " << std::endl;
 
 			/* Debug */
 			//std::cout << "DENSITY -> Assign drho_temp was SUCCESSFUL. " << drho_temp << std::endl;

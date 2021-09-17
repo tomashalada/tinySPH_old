@@ -9,7 +9,7 @@ void ShiftParticles
 
 	const real Afsm = 2.;
 	const real Afst = 1.5;
-	const real A = 2;
+	const real A = 1;
 
 	const real h = particles.data_const.h;
 
@@ -38,13 +38,13 @@ void ShiftParticles
 		{
 
 
-			deltar = dC * ( Afsc * A * h * vs * dt);
+			deltar = dC * (Afsc * A * h * vs * dt);
 
 		}
 		else if((divr - Afst) == 0)
 		{
 
-			deltar = dC * ( A * h * vs * dt);
+			deltar = dC * (A * h * vs * dt);
 
 		}
 		else
@@ -56,7 +56,7 @@ void ShiftParticles
 
 		particles.data.r[p] = particles.data.r[p] + deltar;
 		/* Debug */
-		//std::cout << "[ SHIFITNG ] delta r = [" << deltar.x << "," << deltar.y << "]" << std::endl;
+		std::cout << "[ SHIFITNG ] delta r = [" << deltar.x << "," << deltar.y << "]" << std::endl;
 
 	}
 

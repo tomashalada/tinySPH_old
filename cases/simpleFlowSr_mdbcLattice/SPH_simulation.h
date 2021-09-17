@@ -45,7 +45,9 @@ struct SPH_simulation
 		//Draw_geometry_piston(particles, dp);
 		//Draw_geometry_dam_break_with_inlet(particles, dp);
 		//Draw_geometry_piston_narrow(particles, dp);
-		Draw_geometry_dam_break_with_inlet_and_outletLR(particles, dp);
+		//Draw_geometry_dam_break_with_inlet_and_outletLR(particles, dp);
+
+		#include "geometry.h"
 
 		// Create grid for co-interacting pairs
 		Divide_To_Cells(particles, simulation_data);
@@ -200,7 +202,7 @@ struct SPH_simulation
 
 			//void GenerateInterpol
 			//(Particle_system &particles, Simulation_data simulation_data, std::string fname, int step, real x0, real y0, real xm, real ym)
-			//__ GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.05, 0., 0.95, 0.2);
+			 GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.05, 0., 0.95, 0.3);
 			std::cout << "[INTERPOLATION - DONE and SAVED.]" << std::endl;
 		}
 

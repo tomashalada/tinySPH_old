@@ -1,5 +1,5 @@
 #include "SPH_defs.h"
-#include "../cases/damBreak/SPH_simulation.h"
+#include "../cases/simpleFlowSr_mdbcLattice/SPH_simulation.h"
 
 int main(){
 

@@ -171,14 +171,15 @@ main.o: main.cu /usr/include/stdc-predef.h SPH_defs.h \
  /usr/include/c++/11.1.0/bits/stl_heap.h \
  /usr/include/c++/11.1.0/bits/stl_tempbuf.h \
  /usr/include/c++/11.1.0/bits/uniform_int_dist.h \
- ../cases/damBreak/SPH_simulation.h SPH_particle_system.h SPH_data.h \
- SPH_inlet_outlet_data.h SPH_find_pairs.h SPH_data_to_vtk.h \
+ ../cases/simpleFlowSr_mdbcLattice/SPH_simulation.h SPH_particle_system.h \
+ SPH_data.h SPH_inlet_outlet_data.h SPH_find_pairs.h SPH_data_to_vtk.h \
  SPH_grid_to_vtk.h SPH_dataInterpolation.h SPH_kernel_approx.h \
- SPH_kernel.h SPH_density.h SPH_pressure.h SPH_acceleration.h \
+ SPH_kernel.h testing.h SPH_density.h SPH_pressure.h SPH_acceleration.h \
  SPH_viscouse_forces.h SPH_integration.h SPH_moving_boundary.h \
  SPH_output_info.h draw_geometry.h SPH_create.h SPH_mDBC.h \
- SPH_inlet_outlet.h SPH_shifting.h ../cases/damBreak/constants.h \
- ../cases/damBreak/geometry.h
+ SPH_inlet_outlet.h SPH_shifting.h \
+ ../cases/simpleFlowSr_mdbcLattice/constants.h \
+ ../cases/simpleFlowSr_mdbcLattice/geometry.h
 /usr/include/stdc-predef.h:
 SPH_defs.h:
 /usr/include/stdio.h:
@@ -434,7 +435,7 @@ SPH_defs.h:
 /usr/include/c++/11.1.0/bits/stl_heap.h:
 /usr/include/c++/11.1.0/bits/stl_tempbuf.h:
 /usr/include/c++/11.1.0/bits/uniform_int_dist.h:
-../cases/damBreak/SPH_simulation.h:
+../cases/simpleFlowSr_mdbcLattice/SPH_simulation.h:
 SPH_particle_system.h:
 SPH_data.h:
 SPH_inlet_outlet_data.h:
@@ -444,6 +445,7 @@ SPH_grid_to_vtk.h:
 SPH_dataInterpolation.h:
 SPH_kernel_approx.h:
 SPH_kernel.h:
+testing.h:
 SPH_density.h:
 SPH_pressure.h:
 SPH_acceleration.h:
@@ -456,5 +458,5 @@ SPH_create.h:
 SPH_mDBC.h:
 SPH_inlet_outlet.h:
 SPH_shifting.h:
-../cases/damBreak/constants.h:
-../cases/damBreak/geometry.h:
+../cases/simpleFlowSr_mdbcLattice/constants.h:
+../cases/simpleFlowSr_mdbcLattice/geometry.h:

@@ -89,6 +89,9 @@ void Integrate_density_compute_pressure
 
 			particles.data.rho[p] += particles.data.drho[p]*dt;
 
+			if(particles.data.rho[p] > 1500. || particles.data.rho[p] < 0.)
+			{std::cout << " ** DEBUG **  Particle on position rho = [" << particles.data.rho[p] << "]  was excluded. " << std::endl;}
+
 			/* Debug */
 			//if(abs(particles.data.drho[p]) > 0.0005)
 			//{

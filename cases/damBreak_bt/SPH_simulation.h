@@ -6,14 +6,18 @@
 #include "SPH_dataInterpolation.h"
 
 #include "SPH_density.h"
+#include "SPH_density_bt.h"
 #include "SPH_pressure.h"
 #include "SPH_acceleration.h"
+#include "SPH_acceleration_bt.h"
 
 #include "SPH_integration.h"
 #include "SPH_moving_boundary.h"
 
 #include "SPH_output_info.h"
-#include "draw_geometry.h"
+//#include "draw_geometry.h"
+//#include "SPH_create.h"
+#include "SPH_create_bt.h"
 
 #include "SPH_mDBC.h"
 
@@ -45,7 +49,8 @@ struct SPH_simulation
 		//Draw_geometry_piston(particles, dp);
 		//Draw_geometry_dam_break_with_inlet(particles, dp);
 		//Draw_geometry_piston_narrow(particles, dp);
-		Draw_geometry_dam_break_with_inlet_and_outletLR(particles, dp);
+		//Draw_geometry_dam_break_with_inlet_and_outletLR(particles, dp);
+			#include "geometry.h"
 
 		// Create grid for co-interacting pairs
 		Divide_To_Cells(particles, simulation_data);
@@ -99,8 +104,9 @@ struct SPH_simulation
 		std::cout << "SIMULATION -> RUN: Particles to cells. DONE. " << std::endl;
 
 		/* Compute density change */
-		Compute_Density(particles);
-		mDBC_compute_density(particles, simulation_data, dp/2);
+		Compute_Density_BT(particles);
+		//mDBC_compute_density(particles, simulation_data, dp/2);
+		//mDBC_compute_density_mdbcGeo(particles, simulation_data);
 		std::cout << "SIMULATION -> RUN: Compute density. DONE. " << std::endl;
 
 		/* Integrate densiy and compute pressure, CHANGE */
@@ -108,7 +114,7 @@ struct SPH_simulation
 		std::cout << "SIMULATION -> RUN: Integrate density. DONE. " << std::endl;
 
 		/* Compute acceleration */
-		Compute_Acceleration(particles);
+		Compute_Acceleration_BT(particles);
 		std::cout << "SIMULATION -> RUN: Compute acceleration. DONE. " << std::endl;
 
 		/* Second part of integration */
@@ -117,7 +123,7 @@ struct SPH_simulation
 
 		/*** Update inlet buffer ***/
 		//void Integrate_inlet(Particle_system &particles, double dt, double x_b, realvec v_inl, real b_len)
-		Integrate_inlet(particles, dt, inlet_x0, inlet_vel, 4*dp);
+	//	Integrate_inlet(particles, dt, inlet_x0, inlet_vel, 4*dp);
 
 		//std::cout << "Debug: " << particles.zones.size() << " Zone coordinates: [x0, y0] = [" << particles.zones[0].x0 << "," << particles.zones[0].y0 << "], [xm, ym] = [" << particles.zones[0].xm << "," << particles.zones[0].ym << "]"<< ", bl: " << particles.zones[0].bl <<std::endl;
 
@@ -134,16 +140,28 @@ struct SPH_simulation
 								/* Dynamic buffer - RIGHT */
 
 		//void Outlet_treatment_remove_fluid_with_renew(Particle_system &particles, double x_b, double b_len, double dt, double dp)
-		Outlet_treatment_remove_fluid_with_renew(particles, outletDyn_x0, 4*dp, dt, dp); // this works somehow
+		//Outlet_treatment_remove_fluid_with_renew(particles, outletDyn_x0, 4*dp, dt, dp); // this works somehow
 
 		//vodi Renew_buffer(Particle_system &particles, Simulation_data simulation_data, double x0_b, double y0_b, double xm_b, double ym_b, double dp, int step, double &cheat)
-		Renew_buffer(particles, simulation_data, outletDyn_x0, inlet_y0, outletDyn_xm, outletDyn_ym, dp, step, cheat);
+		//Renew_buffer(particles, simulation_data, outletDyn_x0, inlet_y0, outletDyn_xm, outletDyn_ym, dp, step, cheat);
 
 									//--> Outlet_treatment_update_velocity(particles, simulation_data, 0.9-4*dp -dp/2, dp); // -dp/2 nDBC mirror line
 									//Outlet_treatment_update_velocity(particles, simulation_dataHR, 0.9-4*dpHR -dpHR/2, dpHR); // -dp/2 nDBC mirror line
 
 		// --- Outlet_y_direction(particles, 0.9  - 4*dp, 0.0 + dp, 0.2, +1, 4, {2.0, 0.});
 		std::cout << "SIMULATION -> RUN: Inlet and outlet treatment. DONE. " << std::endl;
+
+		/*Particle shiftig */
+		//if(step%5 == 0)
+		//{
+
+		//	//void ShiftParticles
+		//	//(Particle_system &particles, Simulation_data simulation_data, real dt)
+		//	ShiftParticles(particles, simulation_data, dt);
+
+		//}
+
+		std::cout << "SIMULATION -> RUN: Particles shifting. DONE. " << std::endl;
 
 		/* Output to vtk. */
 		if(step%save_output_interval == 0)
@@ -157,10 +175,10 @@ struct SPH_simulation
 
 			//output_file_name_p_out += std::to_string(step) + ".vtk";
 
-			//write_to_ASCII_VTK(particles, output_file_name);
+			write_to_ASCII_VTK(particles, output_file_name);
 			//write_to_ASCII_VTK(particlesHR, output_file_nameHR);
 
-			write_to_ASCII_VTK_noIOzones(particles, output_file_namefo);
+			//write_to_ASCII_VTK_noIOzones(particles, output_file_namefo);
 
  		//excluded_particle_write_to_ASCII_VTK(particles, output_file_name_p_out);
 
@@ -174,20 +192,11 @@ struct SPH_simulation
  	// output_file_namefo = "resultsfo/particles_"; //move
  	// output_file_nameHRfo = "resultsHRfo/particles_"; //move
 
-		/*Particle shiftig */
-		//if(step%25 == 0)
-		//{
-
-		//	//void ShiftParticles
-		//	//(Particle_system &particles, Simulation_data simulation_data, real dt)
-		//	ShiftParticles(particles, simulation_data, dt);
-
-		//}
-
 
 		std::cout << "SIMULATION -> STEP RECAP <-" << std::endl;
 		std::cout << "np: " << particles.np << " | Data array size -> r: " << particles.data.r.size() << " rho: " << particles.data.rho.size() << std::endl;
 		std::cout << "np_out: " << particles.np_out << std::endl;
+
 
 
 		//OUTPUT INTERPOLATE DATA
@@ -200,11 +209,9 @@ struct SPH_simulation
 
 			//void GenerateInterpol
 			//(Particle_system &particles, Simulation_data simulation_data, std::string fname, int step, real x0, real y0, real xm, real ym)
-			//__ GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.05, 0., 0.95, 0.2);
+			GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.0, 0., 0.8, 0.7);
 			std::cout << "[INTERPOLATION - DONE and SAVED.]" << std::endl;
 		}
-
-
 
 		} // Main time loop.
 

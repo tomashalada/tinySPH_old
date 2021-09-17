@@ -42,6 +42,7 @@ struct SPH_special
 {
 
 	std::vector<realvec> gnr; //mDBC, ghost node position for walls
+	std::vector<realvec> n; //BT, boundary particles normals
 
 };
 
