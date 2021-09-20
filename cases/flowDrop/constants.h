@@ -18,7 +18,7 @@
 	real kap = 1.;
 
 	unsigned int save_output_interval = 25; //temp, default 25
-	unsigned int save_output_interval_interpolated = 1000;
+	unsigned int save_output_interval_interpolated = 500;
 	unsigned int step = 0; //Time in steps
 	unsigned int step_end = 5001; //Endtime in steps;
 
@@ -53,7 +53,7 @@ std::string fileName_resultsFluidOnly = casePATH + "OUTPUT/resultsFluidOnly/part
 
 std::string fileName_resultsAll = casePATH + "OUTPUT/resultsAll/partAll_";
 
-std::string fileName_resultsInterpol = casePATH + "OUTPUT/resultsInterpolated/fieldInterpolated_";
+std::string fileName_resultsInterpol = casePATH + "OUTPUT/resultsInterpolated/fieldInterpolatedFINE_";
 
 std::string fileName_initCond = casePATH + "OUTPUT/initialCondition.vtk";
 
