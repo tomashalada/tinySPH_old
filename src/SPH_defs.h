@@ -39,7 +39,8 @@
 
 
 /* Type of particles */
-enum{
+enum
+{
 	fluid=0,
 	wall=1,
 	virt=2,
@@ -47,8 +48,18 @@ enum{
 	mov_b=4,
 	mov_c=5,
 	inlet=6,
-	outlet=7,
-	outletf=8
+	inlet1=7,
+	inlet2=8,
+	inlet3=9,
+	inlet4=9,
+	inlet5=10,
+	outlet=11,
+	outlet1=12,
+	outlet2=13,
+	outlet3=14,
+	outlet4=15,
+	outlet5=16,
+	outletf=17
 };
 
 // ###

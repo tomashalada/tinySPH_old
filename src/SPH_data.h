@@ -43,6 +43,8 @@ struct SPH_special
 
 	std::vector<realvec> gnr; //mDBC, ghost node position for walls
 	std::vector<realvec> n; //BT, boundary particles normals
+	std::vector<real> omega; //ALESPH particle volume
+	std::vector<real> domega; //ALESPH particle volume change
 
 };
 

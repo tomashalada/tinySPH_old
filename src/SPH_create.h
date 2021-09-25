@@ -458,12 +458,13 @@ void DRAW_CreateInletY(Particle_system &particles, double x, double y_0, double 
 			v.x = v0.x; v.y = v0.y;
 			a.x = 0; a.y = 0;
 
-			particles.Add_particle(inlet, 0, particles.data_const.rho0, r, v, a);
+			particles.Add_particle(type, 0, particles.data_const.rho0, r, v, a);
 		}
 	}
 
 	//write buffer information
-	particles.zones.push_back(InletBuffer(x, y_0, x + nbl*dp*orientation, y_1, nbl, v0));
+	//particles.zones.push_back(InletBuffer(x, y_0, x + nbl*dp*orientation, y_1, nbl, v0));
+	particles.zones.push_back(BufferZone(x, x + nbl*dp*orientation, y_0, y_1, nbl, v0, {(real)orientation, 0}, type));
 
 } // function
 
@@ -490,16 +491,54 @@ void DRAW_CreateInletX(Particle_system &particles, double y, double y_0, double 
 			v.x = v0.x; v.y = v0.y;
 			a.x = 0; a.y = 0;
 
-			particles.Add_particle(inlet, 0, particles.data_const.rho0, r, v, a);
+			particles.Add_particle(type, 0, particles.data_const.rho0, r, v, a);
 		}
 	}
 
 	//write buffer information
-	particles.zones.push_back(InletBuffer(y, y_0, y + nbl*dp*orientation, y_1, nbl, v0));
+	//particles.zones.push_back(InletBuffer(y, y_0, y + nbl*dp*orientation, y_1, nbl, v0));
+	particles.zones.push_back(BufferZone(y, y_0, y + nbl*dp*orientation, y_1, nbl, v0, {0, (real)orientation}, type));
 
 } // function
 
 /*** New better functions ***/
+
+/*** NEW AND BETTER CREATE FUNCTIONS ***/
+void DRAW_CreateOutletY(Particle_system &particles, double x, double y_0, double y_1 , int orientation, int nbl, realvec v0, int type, bool empty)
+{
+
+		real dp = particles.data_const.dp;
+		real kh = particles.data_const.h * particles.data_const.kap;
+		realvec r, v, a;
+
+	if(empty == false){
+
+		//gets length of wall line and number of particles for the wall
+		real len = LEN(x, y_0, x, y_1);
+		unsigned int npart = std::ceil(len/dp) + 1;
+
+		//create particles
+		for(int l = 0; l < nbl; l++)
+		{
+			r.x = x + dp*l*orientation;
+
+			for(int h = 0; h < npart; h++)
+			{
+				r.y = y_0 + h*dp;
+
+				v.x = v0.x; v.y = v0.y;
+				a.x = 0; a.y = 0;
+
+				particles.Add_particle(inlet, 0, particles.data_const.rho0, r, v, a);
+			}
+		}
+	}
+
+	//write buffer information
+	//particles.zones.push_back(InletBuffer(x, y_0, x + nbl*dp*orientation, y_1, nbl, v0));
+	particles.zones.push_back(BufferZone(x, x + nbl*dp*orientation, y_0, y_1, nbl, v0, {(real)orientation, 0}, type));
+
+} // function
 
 ///===================================================================================================///
 
@@ -645,3 +684,4 @@ void Create_Wall_x_lattice(Particle_system & particles, double x_0, double x_1, 
 	}
 
 }
+

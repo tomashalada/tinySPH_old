@@ -31,7 +31,7 @@ void GenerateInterpol
 	ym = 0.2;
 	*/
 
-	real sf = 2; //Smoothness factor
+	real sf = 4; //Smoothness factor
 	real dh = h/sf;
 
 	int ncx = (int)((xm - x0)/h) * sf;

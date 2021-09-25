@@ -19,7 +19,7 @@ struct Particle_system
 	unsigned int np_out; // number of particles leaving the simulation
 
 	std::vector<Cell> cells; //grid over domain to work with particle pairs
-	std::vector<BufferZones> zones; //information about inlet, outlets
+	std::vector<BufferZone> zones; //information about inlet, outlets
 
 	//Function to create new particles
 	void Add_particle

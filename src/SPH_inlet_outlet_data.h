@@ -2,6 +2,48 @@
 
 #include "SPH_defs.h"
 
+enum bt
+{
+
+	inlet_v_const = 0,
+	inlet_v_profile = 1,
+	inlet_v_height = 2,
+
+	outlet_v_const = 3,
+	outlet_v_profile = 4,
+	outlet_v_height = 5
+
+};
+
+struct BufferZone
+{
+
+	realvec orientation; //{+1,0},{-1,0},{0,+1},{0,-1}
+	real x0, y0, xm, ym; //zone region
+	unsigned int nbl; //number of buffer layers
+
+	real bl, bh; //buffer length, buffer
+	unsigned int btype; //buffer type
+	realvec v_b; //default buffer velocity
+
+	/* Help, test, special */
+	real bh_old; //buffer height in previous time step
+
+	BufferZone
+	(real _x0, real _xm, real _y0, real _ym, idx nbl, realvec _v0, realvec _orientation, unsigned int _btype) :
+	x0(_x0), xm(_xm), y0(_y0), ym(_ym), v_b(_v0), orientation(_orientation), btype(_btype)
+	{
+
+		bl = fabs(xm - x0);
+		bh = fabs(ym - y0);
+
+	}
+
+};
+
+
+
+
 //struct with information about buffer zones
 struct BufferZones
 {

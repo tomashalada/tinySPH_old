@@ -125,6 +125,7 @@ struct SPH_simulation
 		//void Integrate_inlet(Particle_system &particles, double dt, double x_b, realvec v_inl, real b_len)
 		//Integrate_inlet(particles, dt, inlet_x0, inlet_vel, 4*dp);
 		BZ_Integrate_inlet(particles, 0, dt);
+		BZ_Integrate_inlet(particles, 1, dt);
 
 		//Integrate_inlet(particles, particles.zones[0], dt);
 		std::cout << "SIMULATION -> RUN: Update inlet  buffer. DONE. " << std::endl;
@@ -181,7 +182,7 @@ struct SPH_simulation
 
 			//void GenerateInterpol
 			//(Particle_system &particles, Simulation_data simulation_data, std::string fname, int step, real x0, real y0, real xm, real ym)
-			GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.05, 0., 0.95, 0.22);
+			GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.05, 0., 0.95, 0.3);
 			std::cout << "[INTERPOLATION - DONE and SAVED.]" << std::endl;
 		}
 

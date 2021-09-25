@@ -83,10 +83,13 @@ void Compute_Density
 			/* Debug */
 			//std::cout << "DENSITY -> PARICLE AC LOOP: Particle idx: " << particles.cells[zz].cp[i] << std::endl;
 
+			if(particles.data.part_type[particles.cells[zz].cp[i]] != fluid){continue;}
+			/*
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == outletf){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == outlet){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == inlet){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == wall){continue;}
+			*/
 
 			realvec ar; //position of ative particle
 			realvec av; //position of ative particle
