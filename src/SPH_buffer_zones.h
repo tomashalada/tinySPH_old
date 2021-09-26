@@ -11,55 +11,100 @@ void BZ_Integrate_inlet
 (Particle_system &particles, unsigned int zoneIndex, double dt)
 {
 
-		BufferZone INLET = particles.zones[zoneIndex];
+		BufferZone BUFFER = particles.zones[zoneIndex];
 
 		real x_b;
 		int orientation;
-		if(INLET.orientation.x != 0){ x_b = INLET.x0; orientation = INLET.orientation.x; }
-		else if(INLET.orientation.y != 0){ x_b = INLET.y0; orientation = INLET.orientation.x; }
-		else{ std::cout << "INVALID INLET ORIENTATION." << std::endl; } //throw error
+		if(BUFFER.orientation.x != 0){ x_b = BUFFER.x0; orientation = BUFFER.orientation.x; }
+		else if(BUFFER.orientation.y != 0){ x_b = BUFFER.y0; orientation = BUFFER.orientation.y; }
+		else{ std::cout << "[BZ_Integrate_inlet] >> INVALID INLET ORIENTATION." << std::endl; } //throw error
 
-		real b_len = INLET.bl;
-		realvec v_inl = INLET.v_b;
-		unsigned int inletNumber = INLET.btype;
+		real b_len = BUFFER.bl;
+		realvec v_inl = BUFFER.v_b;
+		unsigned int inletNumber = BUFFER.btype;
 
 		std::cout << "[BZ_Integrate_inlet] >> Buffer zone data loaded. x_b: " << x_b << " b_len: " << b_len << " v_inl: [" << v_inl.x << "," << v_inl.y << "]" << std::endl;
 
-		if(orientation < 0)
+		if(BUFFER.orientation.x != 0)
 		{
-
-			//#pragma omp parallel for schedule(static)
-			for(int p = 0; p < particles.np; p++)
+			if(orientation < 0)
 			{
-				if(particles.data.part_type[p] != inletNumber){continue;}
-				//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
-				particles.data.r[p].x = particles.data.r[p].x + particles.data.v[p].x * dt;
-				//if(particles.data.r[p].x > x_b)
-				if(particles.data.r[p].x > x_b)
-				{
-					particles.data.part_type[p] = fluid;
-					particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x - b_len, particles.data.r[p].y}, v_inl, {0., 0.});
-				}
-			}
 
-		}//orientation if
-		else if(orientation > 0)
+				//#pragma omp parallel for schedule(static)
+				for(int p = 0; p < particles.np; p++)
+				{
+					if(particles.data.part_type[p] != inletNumber){continue;}
+					//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
+					particles.data.r[p].x = particles.data.r[p].x + particles.data.v[p].x * dt;
+					//if(particles.data.r[p].x > x_b)
+					if(particles.data.r[p].x > x_b)
+					{
+						particles.data.part_type[p] = fluid;
+						particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x - b_len, particles.data.r[p].y}, v_inl, {0., 0.});
+					}
+				}
+
+			}//orientation if
+			else if(orientation > 0)
+			{
+
+				//#pragma omp parallel for schedule(static)
+				for(int p = 0; p < particles.np; p++)
+				{
+					if(particles.data.part_type[p] != inletNumber){continue;}
+					//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
+					particles.data.r[p].x = particles.data.r[p].x + particles.data.v[p].x * dt;
+					if(particles.data.r[p].x < x_b)
+					{
+						particles.data.part_type[p] = fluid;
+						particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x + b_len, particles.data.r[p].y}, v_inl, {0., 0.});
+					}
+				}
+
+			}//orientation if
+		}
+		else if(BUFFER.orientation.y != 0)
 		{
-
-			//#pragma omp parallel for schedule(static)
-			for(int p = 0; p < particles.np; p++)
+			if(orientation < 0)
 			{
-				if(particles.data.part_type[p] != inletNumber){continue;}
-				//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
-				particles.data.r[p].x = particles.data.r[p].x + particles.data.v[p].x * dt;
-				if(particles.data.r[p].x < x_b)
-				{
-					particles.data.part_type[p] = fluid;
-					particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x + b_len, particles.data.r[p].y}, v_inl, {0., 0.});
-				}
-			}
 
-		}//orientation if
+				//#pragma omp parallel for schedule(static)
+				for(int p = 0; p < particles.np; p++)
+				{
+					if(particles.data.part_type[p] != inletNumber){continue;}
+					//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
+					particles.data.r[p].y = particles.data.r[p].y + particles.data.v[p].y * dt;
+					//if(particles.data.r[p].x > x_b)
+					if(particles.data.r[p].y > x_b)
+					{
+						particles.data.part_type[p] = fluid;
+						particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x, particles.data.r[p].y - b_len}, v_inl, {0., 0.});
+					}
+				}
+
+			}//orientation if
+			else if(orientation > 0)
+			{
+
+				//#pragma omp parallel for schedule(static)
+				for(int p = 0; p < particles.np; p++)
+				{
+					if(particles.data.part_type[p] != inletNumber){continue;}
+					//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
+					particles.data.r[p].y = particles.data.r[p].y + particles.data.v[p].y * dt;
+					if(particles.data.r[p].y < x_b)
+					{
+						particles.data.part_type[p] = fluid;
+						particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x, particles.data.r[p].y + b_len}, v_inl, {0., 0.});
+					}
+				}
+
+			}//orientation if
+		}
+		else
+		{
+			std::cout << "INVALID INLET ORIENTATION." << std::endl;
+		} //throw error
 
 } // function
 
@@ -70,51 +115,95 @@ void BZ_Integrate_outlet
 (Particle_system &particles, unsigned int zoneIndex, double dt)
 {
 
-		BufferZone OUTLET = particles.zones[zoneIndex];
-
-		real x_b;
-		if(OUTLET.orientation.x != 0){ x_b = OUTLET.x0; }
-		else if(OUTLET.orientation.y != 0){ x_b = OUTLET.y0; }
-		else{ std::cout << "INVALID OUTLET ORIENTATION." << std::endl; } //throw error
-
-		real b_len = OUTLET.bl;
-		realvec v_inl = OUTLET.v_b;
-
-		std::cout << "[BZ_Integrate_outlet] >> Buffer zone data loaded. x_b: " << x_b << " b_len: " << b_len << " v_inl: [" << v_inl.x << "," << v_inl.y << "]" << std::endl;
-
+		//load constants
 		real dp = particles.data_const.dp;
 
+		//load buffer data
+		BufferZone BUFFER = particles.zones[zoneIndex];
+
+		real x_b, y0;
+		int orientation;
+		if(BUFFER.orientation.x != 0){ x_b = BUFFER.x0; orientation = BUFFER.orientation.x; }
+		else if(BUFFER.orientation.y != 0){ x_b = BUFFER.y0; orientation = BUFFER.orientation.y; }
+		else{ std::cout << "[BZ_Integrate_inlet] >> INVALID INLET ORIENTATION." << std::endl; } //throw error
+
+		real b_len = BUFFER.bl;
+		realvec v_inl = BUFFER.v_b;
+		unsigned int outletNumber = BUFFER.btype;
+
+		std::cout << "[BZ_Integrate_inlet] >> Buffer zone data loaded. x_b: " << x_b << " b_len: " << b_len << " v_inl: [" << v_inl.x << "," << v_inl.y << "]" << std::endl;
+
+
 	//#pragma omp parallel for schedule(static)
-	for(int p = 0; p < particles.np; p++)
+	if(BUFFER.orientation.x != 0)
 	{
-
-		if(particles.data.part_type[p] == fluid)
+		if(orientation > 0)
 		{
 
-			if(particles.data.r[p].x > x_b) // change fluid particle to buffer particle
+			for(int p = 0; p < particles.np; p++)
 			{
+				if(particles.data.part_type[p] == fluid)
+				{
+					if(particles.data.r[p].x > x_b) // change fluid particle to buffer particle
+					{
+						particles.data.part_type[p] = outletNumber; //retype fluid incomming to buffer
+						particles.data.a[p] = {0., 0};
+						particles.data.drho[p] = 0.;
+					}
+				} // particle fluid if
+				else if(particles.data.part_type[p] == outletNumber)
+				{
+					particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt; //update outlet p. position
+					if(particles.data.r[p].x > x_b + b_len || particles.data.r[p].y < dp/2) // change fluid particle to buffer particle
+					{
+						particles.Remove_particle(p); //remove particle outgoing from buffer
+					}
+				} /// particle outlet if
+			} // particle loop
 
-				particles.data.part_type[p] = outlet; //retype fluid incomming to buffer
-				particles.data.a[p] = {0., 0};
-				particles.data.drho[p] = 0.;
-
-			}
-		} // particle fluid if
-
-		else if(particles.data.part_type[p] == outlet)
+		}
+		else if(orientation < 0)
 		{
 
-			particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt; //update outlet p. position
-
-			if(particles.data.r[p].x > x_b + b_len || particles.data.r[p].y < dp/2) // change fluid particle to buffer particle
+			for(int p = 0; p < particles.np; p++)
 			{
+				if(particles.data.part_type[p] == fluid)
+				{
+					if(particles.data.r[p].x < x_b) // change fluid particle to buffer particle
+					{
+						particles.data.part_type[p] = outletNumber; //retype fluid incomming to buffer
+						particles.data.a[p] = {0., 0};
+						particles.data.drho[p] = 0.;
+					}
+				} // particle fluid if
+				else if(particles.data.part_type[p] == outletNumber)
+				{
+					particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt; //update outlet p. position
+					if(particles.data.r[p].x < x_b + b_len || particles.data.r[p].y < dp/2) // change fluid particle to buffer particle
+					{
+						particles.Remove_particle(p); //remove particle outgoing from buffer
+					}
+				} /// particle outlet if
+			} // particle loop
 
-				particles.Remove_particle(p); //remove particle outgoing from buffer
+		}
+	}
+	else if(BUFFER.orientation.y != 0)
+	{
+		if(orientation < 0)
+		{
 
-			}
 
-		} /// particle outlet if
-	} // particle loop
+
+		}
+		else if(orientation > 0)
+		{
+
+
+
+		}
+	}
+
 } // function
 
 void BZ_Renew_outlet_buffer

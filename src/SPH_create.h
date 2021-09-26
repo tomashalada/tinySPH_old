@@ -468,7 +468,7 @@ void DRAW_CreateInletY(Particle_system &particles, double x, double y_0, double 
 
 } // function
 
-void DRAW_CreateInletX(Particle_system &particles, double y, double y_0, double y_1 , int orientation, int nbl, realvec v0, int type)
+void DRAW_CreateInletX(Particle_system &particles, double y, double x_0, double x_1 , int orientation, int nbl, realvec v0, int type)
 {
 
 	real dp = particles.data_const.dp;
@@ -476,7 +476,7 @@ void DRAW_CreateInletX(Particle_system &particles, double y, double y_0, double 
 	realvec r, v, a;
 
 	//gets length of wall line and number of particles for the wall
-	real len = LEN(y, y_0, y, y_1);
+	real len = LEN(x_0, y, x_1, y);
 	unsigned int npart = std::ceil(len/dp) + 1;
 
 	//create particles
@@ -486,7 +486,7 @@ void DRAW_CreateInletX(Particle_system &particles, double y, double y_0, double 
 
 		for(int h = 0; h < npart; h++)
 		{
-			r.x = y_0 + h*dp;
+			r.x = x_0 + h*dp;
 
 			v.x = v0.x; v.y = v0.y;
 			a.x = 0; a.y = 0;
@@ -497,7 +497,7 @@ void DRAW_CreateInletX(Particle_system &particles, double y, double y_0, double 
 
 	//write buffer information
 	//particles.zones.push_back(InletBuffer(y, y_0, y + nbl*dp*orientation, y_1, nbl, v0));
-	particles.zones.push_back(BufferZone(y, y_0, y + nbl*dp*orientation, y_1, nbl, v0, {0, (real)orientation}, type));
+	particles.zones.push_back(BufferZone(x_0, x_1, y, y + nbl*dp*orientation, nbl, v0, {0, (real)orientation}, type));
 
 } // function
 

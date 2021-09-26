@@ -1,5 +1,5 @@
 #include "SPH_defs.h"
-#include "../cases/doubleInlet_bt/SPH_simulation.h"
+#include "../cases/flowDrop_bt/SPH_simulation.h"
 
 int main(){
 

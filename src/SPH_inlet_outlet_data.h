@@ -37,6 +37,10 @@ struct BufferZone
 		bl = fabs(xm - x0);
 		bh = fabs(ym - y0);
 
+		if(orientation.x != 0){ bl = fabs(xm - x0); bh = fabs(ym - y0); }
+		else if(orientation.y != 0){ bl = fabs(ym - y0); bh = fabs(xm - x0); }
+		else{ std::cout << "[CREATE BUFFER ZONE] >> INVALID INLET ORIENTATION." << std::endl; } //throw error
+
 	}
 
 };
