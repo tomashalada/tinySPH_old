@@ -93,7 +93,7 @@ void mDBC_compute_density_bt
 			//particles.data.rho[p] = Kernel_density_approximation_mDBC(particles, simulation_data, gn);
 			particles.data.rho[p] = Kernel_density_approximation_MATRIX_mDBC(particles, simulation_data, gn, gnd);
 			//particles.data.rho[p] = Kernel_density_approximation(particles, simulation_data, r);
-
+//std::cout << "[Computde mDBC_BT] rho = " << particles.data.rho[p] << std::endl;
 			if (particles.data.rho[p] > 1500 || particles.data.rho[p] < 0)
 			{std::cout << "[Computde mDBC_BT] rho = " << particles.data.rho[p] << std::endl; }
 

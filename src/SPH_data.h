@@ -45,6 +45,11 @@ struct SPH_special
 	std::vector<realvec> n; //BT, boundary particles normals
 	std::vector<real> omega; //ALESPH particle volume
 	std::vector<real> domega; //ALESPH particle volume change
+	std::vector<real> domegarho; //ALESPH density and omega change
+	std::vector<realvec> omegaa; //ALESPH acceleration and omega
+	std::vector<real> omegarho;
+
+	std::vector<realvec> omegav;
 
 };
 

@@ -149,12 +149,11 @@ void Compute_Acceleration_BT
 
 
 				rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
-				//vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
 				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
 				//vss = velRiemannLinearizedwithPressure(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
-
 				vs = drn * vss + ((av + nv)*0.5 - drn*(vl + vr)*0.5);
-				//ps = Compute_Pressure(rhos,  rho0,  c0);
+				//ps = Compute_Pressure2(rhos,  rho0,  c0);
+
 				ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
 
 				vsdW = (vs.x - dv.x)*dW.x + (vs.y - dv.y)*dW.y;
@@ -176,49 +175,35 @@ void Compute_Acceleration_BT
 
 				//ac_temp = ac_temp - dW*(p_temp + visco)*m; //+= operator is not overloaded yet
 
-				/// if(particles.data.part_type[particles.cells[cl].cp[n]] == wall)
-				/// {
+				if(particles.data.part_type[particles.cells[cl].cp[n]] == wall)
+				{
 
-				/// 	realvec nb = {0., 0.};
-				/// 	nb = particles.special.n[particles.cells[cl].cp[n]];
-				/// 	ndr = dr.x*nb.x + dr.y*nb.y;
+					realvec nb = {0., 0.};
+					nb = particles.special.n[particles.cells[cl].cp[n]]*(-1);
+					ndr = dr.x*nb.x + dr.y*nb.y;
 
 
-				/// 	ac_temp.x += p_temp * nb.x * W * dp * nrho;
-				/// 	ac_temp.y += p_temp * nb.y * W * dp * nrho;
+					ac_temp.x += p_temp * nb.x * W * dp * nrho;
+					ac_temp.y += p_temp * nb.y * W * dp * nrho;
 
-				/// 	//omegaa_temp.x += 2*nomega*W*dp*((rhos*vs.x*(vs.x - vz.x) + ps) * nb.x + (rhos*vs.x*(vs.y - vz.y)) * nb.y);
-				/// 	//omegaa_temp.y += 2*nomega*W*dp*((rhos*vs.y*(vs.x - vz.x)) * nb.x + (rhos*vs.y*(vs.y - vz.y) + ps) * nb.y);
+					//omegaa_temp.x -= 2*nomega*W*dp*((rhos*vs.x*(vs.x - vz.x) + ps) * nb.x + (rhos*vs.x*(vs.y - vz.y)) * nb.y);
+					//omegaa_temp.y -= 2*nomega*W*dp*((rhos*vs.y*(vs.x - vz.x)) * nb.x + (rhos*vs.y*(vs.y - vz.y) + ps) * nb.y);
 
-				/// 	omegaa_temp.x += 2*nomega*W*dp*( ps * nb.x);
-				/// 	omegaa_temp.y += 2*nomega*W*dp*( ps * nb.y);
+					omegaa_temp.x -= 2*nomega*W*dp*( ps * nb.x);
+					omegaa_temp.y -= 2*nomega*W*dp*( ps * nb.y);
 
-				/// 	//ac_temp_visco.x -= dv.x * ndr * W * dp / (drs*drs);
-				/// 	//ac_temp_visco.y -= dv.y * ndr * W * dp / (drs*drs);
 
-				/// 	//ac_temp.x += (p_temp + visco) * nb.x * W * dp * nrho;
-				/// 	//ac_temp.y += (p_temp + visco) * nb.y * W * dp * nrho;
+					ac_temp_visco.x = ac_temp_visco.x - dW.x*(visco )*m;
+					ac_temp_visco.y = ac_temp_visco.y - dW.y*(visco )*m;
 
-				/// 	ac_temp_visco.x = ac_temp_visco.x - dW.x*(visco )*m;
-				/// 	ac_temp_visco.y = ac_temp_visco.y - dW.y*(visco )*m;
+				}
+				else
+				{
 
-				/// 	//omegaa_temp.x -= 2*W*nomega*((rhos*vs.x*(vs.x - vz.x) + ps) * nb.x + (rhos*vs.x*(vs.y - vz.y)) * nb.y);
-				/// 	//omegaa_temp.y -= 2*W*nomega*((rhos*vs.y*(vs.x - vz.x)) * nb.x + (rhos*vs.y*(vs.y - vz.y) + ps) * nb.y);
+					//rdW = dr.x * dW.x + dr.y * dW.y;
 
-				/// }
-				/// else
-				/// {
-
-					rdW = dr.x * dW.x + dr.y * dW.y;
-
-					//ac_temp.x = ac_temp.x - dW.x*(p_temp + visco)*m;
-					//ac_temp.y = ac_temp.y - dW.y*(p_temp + visco)*m;
-
-					ac_temp.x = ac_temp.x - dW.x*(p_temp )*m;
-					ac_temp.y = ac_temp.y - dW.y*(p_temp )*m;
-
-					//ac_temp_visco.x = ac_temp_visco.x + dv.x * rdW * m / (nrho * drs * drs);
-					//ac_temp_visco.y = ac_temp_visco.y + dv.y * rdW * m / (nrho * drs * drs);
+					//ac_temp.x = ac_temp.x - dW.x*(p_temp )*m;
+					//ac_temp.y = ac_temp.y - dW.y*(p_temp )*m;
 
 					ac_temp_visco.x = ac_temp_visco.x - dW.x*(visco )*m;
 					ac_temp_visco.y = ac_temp_visco.y - dW.y*(visco )*m;
@@ -226,7 +211,7 @@ void Compute_Acceleration_BT
 					omegaa_temp.x -= 2*nomega*((rhos*vs.x*(vs.x - vz.x) + ps) * dW.x + (rhos*vs.x*(vs.y - vz.y)) * dW.y);
 					omegaa_temp.y -= 2*nomega*((rhos*vs.y*(vs.x - vz.x)) * dW.x + (rhos*vs.y*(vs.y - vz.y) + ps) * dW.y);
 
-				/// }
+				}
 
 				gamma += W*m/nrho;
 

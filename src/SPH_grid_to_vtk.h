@@ -137,7 +137,7 @@ void write_buffer_mesh_to_ASCII_VTK
 }
 
 void write_INTERPOLATED_mesh_to_ASCII_VTK
-(int ncx, int ncy, double kh, double x_0, double y_0, std::vector<realvec> v, std::string filename)
+(int ncx, int ncy, double kh, double x_0, double y_0, std::vector<realvec> v, std::vector<real> rho, std::vector<real> press, std::string filename)
 {
 
 	std::ofstream file;
@@ -161,7 +161,7 @@ void write_INTERPOLATED_mesh_to_ASCII_VTK
 	int pocBunek = (pocetBoduSiteX)*(pocetBoduSiteY);
 	sitParaviewX = pocetBoduSiteX;
 	sitParaviewY = pocetBoduSiteY;
-	const int pocPoli = 1;
+	const int pocPoli = 3;
 
 	std::cout << "[DATA INTERPOLATION - GRID TO VTK] ncx = " << ncx << " ncy = " << ncy << std::endl;
 
@@ -218,6 +218,19 @@ Hlavička souboru .vtk, sem nesahat!
 		}
 	}
 	*/
+	file << "DENSITY 1 " << pocBunek << " float" << std::endl;
+		for(int j=0;j<pocetBoduSiteY;j++){
+	for(int i=0;i<pocetBoduSiteX;i++){
+			//	file << data[i*pocetBoduSiteY +j] << std::endl; //<------------------ TADY, pozor na indexování
+			file << rho[POS(i,j, pocetBoduSiteX, pocetBoduSiteY)] << std::endl;
+	}}
+
+	file << "PRESSURE 1 " << pocBunek << " float" << std::endl;
+		for(int j=0;j<pocetBoduSiteY;j++){
+	for(int i=0;i<pocetBoduSiteX;i++){
+			//	file << data[i*pocetBoduSiteY +j] << std::endl; //<------------------ TADY, pozor na indexování
+			file << press[POS(i,j, pocetBoduSiteX, pocetBoduSiteY)] << std::endl;
+	}}
 
 	file << "VELOCITY 3 " << pocBunek << " float" << std::endl;
 		for(int j=0;j<pocetBoduSiteY;j++){

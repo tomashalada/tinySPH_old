@@ -1,5 +1,15 @@
 #include "SPH_defs.h"
-#include "../cases/flowDrop_bt/SPH_simulation.h"
+
+#include "../cases/RSPH_dambreak_orig/SPH_simulation.h"
+//#include "../cases/RSPH_test_orig/SPH_simulation.h"
+//#include "../cases/RSPH_test_mdbc/SPH_simulation.h"
+//#include "../cases/RSPH_test/SPH_simulation.h"
+
+//#include "../cases/ALESPH_test/SPH_simulation.h"
+//#include "../cases/ALESPH_test_orig/SPH_simulation.h"
+//#include "../cases/ALESPH_test_mdbc/SPH_simulation.h"
+
+//#include "../cases/simpleFlowSr_bt/SPH_simulation.h"
 
 int main(){
 

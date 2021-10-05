@@ -39,7 +39,11 @@ void GenerateInterpol
 	std::cout << "[DATA INTERPOLATION] ncx = " << ncx << " ncy = " << ncy << std::endl;
 
 	std::vector<realvec> vel(ncx*ncy);
+	std::vector<real> rho(ncx*ncy);
+	std::vector<real> press(ncx*ncy);
+
 	std::vector<realvec> pos(ncx*ncy);
+
 
 	//realvec r = {x0, y0};
 
@@ -57,7 +61,15 @@ void GenerateInterpol
 		//pos[POS(x,y,ncx,ncy)] = r;
 
 		//vel[POS(x, y, ncx, ncy)] = Kernel_velocity_approximation_with_mass(particles, simulation_data, r);
-		vel[POS(x, y, ncx, ncy)] = Kernel_velocity_approximation_TEST(particles, simulation_data, r);
+
+		////pred array vel[POS(x, y, ncx, ncy)] = Kernel_velocity_approximation_TEST(particles, simulation_data, r);
+	std::array<real, 4> interpolatedFields;
+	interpolatedFields = Kernel_velocity_approximation_TEST(particles, simulation_data, r);
+
+	rho[POS(x, y, ncx, ncy)] = interpolatedFields[0];
+	press[POS(x, y, ncx, ncy)] = interpolatedFields[1];
+	vel[POS(x, y, ncx, ncy)].x = interpolatedFields[2];
+	vel[POS(x, y, ncx, ncy)].y = interpolatedFields[3];
 
 
 
@@ -69,7 +81,7 @@ void GenerateInterpol
 	}
 	#pragma omp barrier
 
-	write_INTERPOLATED_mesh_to_ASCII_VTK(ncx, ncy, dh, x0, y0, vel, filename);
+	write_INTERPOLATED_mesh_to_ASCII_VTK(ncx, ncy, dh, x0, y0, vel, rho, press, filename);
 	//write_to_ASCII_VTK_POINTS("OUTPUTOO.vtk", vel, pos);
 	//write_INTERPOLATED_DAT(pos, vel, "INTERPOLATED_DAT", step);
 

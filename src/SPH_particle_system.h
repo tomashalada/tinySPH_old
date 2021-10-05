@@ -41,6 +41,33 @@ struct Particle_system
 	}
 
 	//Function to create new particles
+	void ALESPH_Add_particle
+	(short unsigned int _type, real _p, real _rho, realvec _r, realvec _v, realvec _a)
+	{
+
+		np++;
+		data.part_type.push_back(_type);
+		data.index.push_back(np - 1); //particles are labeled from 0
+
+		data.p.push_back(_p);
+		data.rho.push_back(_rho);
+		data.drho.push_back(0.); //init drho/dt with 0
+
+		data.r.push_back(_r);
+		data.v.push_back(_v);
+		data.a.push_back(_a);
+
+		//ALESPH variables
+		special.omega.push_back(data_const.dp * data_const.dp);
+		special.domega.push_back(0.);
+		special.domegarho.push_back(0.);
+		special.omegaa.push_back({0., 0.});
+		special.omegav.push_back(_v*(data_const.dp * data_const.dp));
+		special.omegarho.push_back(_rho*(data_const.dp * data_const.dp));
+
+	}
+
+	//Function to create new particles
 	void Remove_particle
 	(idx p) /* There also should be type, to confirm p match right part. */
 	{

@@ -353,8 +353,16 @@ void Compute_Acceleration_BT
 					//ac_temp.x += (p_temp + visco) * nb.x * W * dp * nrho;
 					//ac_temp.y += (p_temp + visco) * nb.y * W * dp * nrho;
 
+					//THIS DO SOMETING
 					ac_temp_visco.x = ac_temp_visco.x - dW.x*(visco )*m;
 					ac_temp_visco.y = ac_temp_visco.y - dW.y*(visco )*m;
+					/*
+					*/
+
+					/*
+					ac_temp_visco.x = ac_temp_visco.x - nb.x * W * (visco )*m;
+					ac_temp_visco.y = ac_temp_visco.y - nb.y * W * (visco )*m;
+					*/
 
 				}
 				else

@@ -57,24 +57,26 @@ void Compute_Density
 			/* Debug */
 			//std::cout << "DENSITY -> PARICLE AC LOOP: Particle idx: " << particles.cells[zz].cp[i] << std::endl;
 
-			/*
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == outletf){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == outlet){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == inlet){continue;}
-			if(particles.data.part_type[particles.cells[zz].cp[i]] == wall){continue;}
+			//if(particles.data.part_type[particles.cells[zz].cp[i]] == wall){continue;}
+			/*
 			*/
-			if(particles.data.part_type[particles.cells[zz].cp[i]] != fluid){continue;}
+			//if(particles.data.part_type[particles.cells[zz].cp[i]] != fluid){continue;}
 
 			realvec ar; //position of ative particle
 			realvec av; //position of ative particle
 			real arho; //actual particle densiy
 			real aomega; //actual particle volume
+			real ap;
 
 			//Load data of actual particle
 			ar = particles.data.r[particles.cells[zz].cp[i]];
 			av = particles.data.v[particles.cells[zz].cp[i]];
 			arho = particles.data.rho[particles.cells[zz].cp[i]];
 			aomega = particles.special.omega[particles.cells[zz].cp[i]];
+			ap = particles.data.p[particles.cells[zz].cp[i]];
 
 			for(int &cl: ac)
 			{
@@ -89,9 +91,9 @@ void Compute_Density
 
 
 
-				//if(particles.data.part_type[particles.cells[zz].cp[i]] == wall &&
-				//			particles.data.part_type[particles.cells[cl].cp[n]] == wall) {continue;}
-					if(particles.cells[zz].cp[i] == particles.cells[cl].cp[n]){continue;}
+				if(particles.data.part_type[particles.cells[zz].cp[i]] == wall &&
+							particles.data.part_type[particles.cells[cl].cp[n]] == wall) {continue;}
+				if(particles.cells[zz].cp[i] == particles.cells[cl].cp[n]){continue;}
 
 
 				/* Debug */
@@ -101,6 +103,7 @@ void Compute_Density
 				realvec nv; //position of ative particle
 				real nrho; //actual particle densiy
 				real nomega; //neighbour particle
+				real np;
 
 				real drs; //dr size
 				realvec dW; //smoothing function gradient
@@ -127,6 +130,7 @@ void Compute_Density
 				nv = particles.data.v[particles.cells[cl].cp[n]];
 				nrho = particles.data.rho[particles.cells[cl].cp[n]];
 				nomega = particles.special.omega[particles.cells[cl].cp[n]];
+				np = particles.data.p[particles.cells[cl].cp[n]];
 
 				//Position and velocity difference
 				dr = ar - nr;
@@ -146,6 +150,8 @@ void Compute_Density
 
 				rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
 				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
+				//vss = velRiemannLinearizedwithPressure(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
+
 				vs = drn * vss + ((av + nv)*0.5 - drn*(vl + vr)*0.5);
 				realvec vz = (av + nv)*0.5;
 
@@ -159,31 +165,31 @@ void Compute_Density
 
 				//std::cout << "Normal loading... " << std::endl;
 
-				/// if(particles.data.part_type[particles.cells[cl].cp[n]] == wall)
-				/// {
+				if(particles.data.part_type[particles.cells[cl].cp[n]] == wall)
+				{
 
-				/// 	realvec nb = {0., 0.};
-				/// 	nb = particles.special.n[particles.cells[cl].cp[n]];
+					realvec nb = {0., 0.};
+					nb = particles.special.n[particles.cells[cl].cp[n]]*(-1);
 
-				/// 	real dvn = 0;
-				/// 	real vsn = 0;
-				/// 	dvn = dv.x*nb.x + dv.y*nb.y;
-				/// 	vsn = dv.x*nb.x + dv.y*nb.y;
+					real dvn = 0;
+					real vsn = 0;
+					dvn = dv.x*nb.x + dv.y*nb.y;
+					vsn = dv.x*nb.x + dv.y*nb.y;
 
-				/// 	drho_temp -=  nrho*dvn*W*dp;
+					drho_temp -=  nrho*dvn*W*dp;
 
-				/// 	domega_temp -= dvn*W*dp;
-				/// 	//domegarho_temp -= 2 * rhos * vsn * W * dp;
+					domega_temp += dvn*W*dp;
+					//domegarho_temp -= 2 * rhos * vsn * W * dp;
 
-				/// }
-				/// else
-				/// {
+				}
+				else
+				{
 
 					drho_temp += dvdW*m;
-					domega_temp -= dvdW*nomega; //tdy muze byt +
+					domega_temp += dvdW*nomega; //tdy muze byt +
 					domegarho_temp -= 2 * rhos * nomega * vsdW;
 
-				/// }
+				}
 				//std::cout << "Normal loaded. DONE. n = [ " << nb.x << "," << nb.y << " ]drho_temp: " << drho_temp << " nrhp: " << nrho << std::endl;
 
 				gamma += W*m/nrho;

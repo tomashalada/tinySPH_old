@@ -13,6 +13,7 @@
 #include <stdarg.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <array>
 
 #include <algorithm>
 #include <initializer_list>
