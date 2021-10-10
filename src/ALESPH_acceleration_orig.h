@@ -154,7 +154,8 @@ void Compute_Acceleration_BT
 				vs = drn * vss + ((av + nv)*0.5 - drn*(vl + vr)*0.5);
 				//ps = Compute_Pressure2(rhos,  rho0,  c0);
 
-				ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
+				//ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
+				ps = pRiemannLinearizedWithLimiter(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
 
 				vsdW = (vs.x - dv.x)*dW.x + (vs.y - dv.y)*dW.y;
 				vz = (av + nv)*0.5;
@@ -196,7 +197,8 @@ void Compute_Acceleration_BT
 						vr = -vl;
 
 						realvec rwf;
-						rwf = dr;
+						rwf = ar;
+
 						real pR = ap + arho*(-1)*(particles.data_const.graviy.y*rwf.y);
 
 						real vss = velRiemannLinearizedwithPressure(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);

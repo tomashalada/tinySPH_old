@@ -17,7 +17,7 @@ void Integrate_LeapFrog_partOne_ALESPH
 		if(particles.data.part_type[p] == fluid)
 		{
 
-			particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt * 0.5;
+			//particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt * 0.5;
 			particles.special.omegav[p] = particles.special.omegav[p] + particles.special.omegaa[p] * dt * 0.5;
 			particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
 
@@ -45,7 +45,7 @@ void Integrate_LeapFrog_partTwo_ALESPH
 			{
 
 
-				particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt * 0.5;
+				//particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt * 0.5;
 				particles.special.omegav[p] = particles.special.omegav[p] + particles.special.omegaa[p] * dt * 0.5;
 				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
 
@@ -67,7 +67,7 @@ void Integrate_LeapFrog_partTwo_ALESPH
 			if(particles.data.part_type[p] == fluid)
 			{
 
-				particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt;
+				//particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt;
 				particles.special.omegav[p] = particles.special.omegav[p] + particles.special.omegaa[p] * dt;
 				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p] * particles.special.omega[p]);
 
@@ -97,9 +97,12 @@ void Integrate_density_compute_pressure
 			/* Test for outlet */
 			if(particles.data.part_type[p] == outletf){continue;}
 
-		// particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt;
+			/* ALESPHTEST */
+			if(particles.data.part_type[p] != fluid){continue;}
+
+		 particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt;
 			particles.special.omegarho[p] = particles.special.omegarho[p] + particles.special.domegarho[p] * dt;
-		//	particles.data.v[p] = particles.special.omegav[p] / particles.special.omega[p];
+			//	particles.data.v[p] = particles.special.omegav[p] / particles.special.omega[p];
 
 			//particles.data.rho[p] += particles.data.drho[p]*dt;
 			particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);

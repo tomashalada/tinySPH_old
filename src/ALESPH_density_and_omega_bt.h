@@ -36,18 +36,16 @@ void Compute_Density
 		ac = {zz, zp, pp, pz, pm, zm, mm, mz, mp};
 
 		//Temp. data, temp. variable
-		real drho_temp = 0;
 		real domega_temp = 0;
 		real domegarho_temp = 0;
-		real dt_temp = 0;
 		real gamma = 0;
 
 		real h = particles.data_const.h;
 		real m = particles.data_const.m;
 		real delta = particles.data_const.delta;
+		real rho0 = particles.data_const.rho0;
 		real c0 = particles.data_const.cs;
 		real dp = particles.data_const.dp;
-
 
 		double *kernel;
 
@@ -60,9 +58,8 @@ void Compute_Density
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == outletf){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == outlet){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == inlet){continue;}
-			//if(particles.data.part_type[particles.cells[zz].cp[i]] == wall){continue;}
-			/*
-			*/
+			if(particles.data.part_type[particles.cells[zz].cp[i]] == wall){continue;}
+
 			//if(particles.data.part_type[particles.cells[zz].cp[i]] != fluid){continue;}
 
 			realvec ar; //position of ative particle
@@ -99,16 +96,25 @@ void Compute_Density
 				/* Debug */
 				//std::cout << "DENSITY -> PARTICLES IN NEIGHBOUR CELL: Particle ID: " << particles.cells[cl].cp[n] << std::endl;
 
+				//Lead nb particle data
 				realvec nr; //position of ative particle
 				realvec nv; //position of ative particle
 				real nrho; //actual particle densiy
 				real nomega; //neighbour particle
-				real np;
+				real np; //neighbour pressure
+
+				//Load data of neighbour particle
+				nr = particles.data.r[particles.cells[cl].cp[n]];
+				nv = particles.data.v[particles.cells[cl].cp[n]];
+				nrho = particles.data.rho[particles.cells[cl].cp[n]];
+				nomega = particles.special.omega[particles.cells[cl].cp[n]];
+				np = particles.data.p[particles.cells[cl].cp[n]];
 
 				real drs; //dr size
 				realvec dW; //smoothing function gradient
 				real dvdW; //vect(v) \cdot \nabla W
 				realvec dr, dv;
+				real W;
 
 				//ALESPH
 				real vr, vl; //left and right state
@@ -118,53 +124,49 @@ void Compute_Density
 				realvec vs; //v^star, Riemann problem solution
 				real vsdW;
 
-
-				real W = 0;
-
 				//dif. term
 				realvec Psi;
 				real PsidW;
 
-				//Load data of neighbour particle
-				nr = particles.data.r[particles.cells[cl].cp[n]];
-				nv = particles.data.v[particles.cells[cl].cp[n]];
-				nrho = particles.data.rho[particles.cells[cl].cp[n]];
-				nomega = particles.special.omega[particles.cells[cl].cp[n]];
-				np = particles.data.p[particles.cells[cl].cp[n]];
-
 				//Position and velocity difference
 				dr = ar - nr;
 				dv = av - nv;
+				//dv = nv - av;
 				drs = sqrt(pow(dr.x, 2) + pow(dr.y, 2));
+				drn = dr*(1/drs)*(-1); //unit pair vector
 
-				/* get kernel values
-				double *Wendland_kernel(double r, double h) */
+				// Get kernels values
+				//double *Wendland_kernel(double r, double h)
 				kernel = Wendland_kernel(drs, h);
 				W = kernel[0];
-				dW = dr * kernel[1]; // <--- check this, if its ok
-				dvdW = dv.x*dW.x + dv.y*dW.y;
+				dW = dr * kernel[1];
 
-				drn = dr*(1/drs)*(-1); //unit pair vector
+				//Riemann problem
 				vl = av.x * drn.x + av.y * drn.y;
 				vr = nv.x * drn.x + nv.y * drn.y;
 
-				rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
-				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
-				//vss = velRiemannLinearizedwithPressure(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
+				//real avgc = cs(arho, rho0, c0) + cs(nrho, rho0, c0);
+				real avgc = c0;
+				rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
+				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
+				//vss = velRiemannLinearizedwithPressure(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
+
+				//***experiment***
+				//real ps = pRiemannLinearizedWithLimiter(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
+				//rhos = ps/(c0*c0) + rho0;
+				//***experiment***
 
 				vs = drn * vss + ((av + nv)*0.5 - drn*(vl + vr)*0.5);
-				realvec vz = (av + nv)*0.5;
+
+				//realvec vz = (av + nv)*0.5;
+				//realvec vz = (av + nv)/2;
+				realvec vz = av;
 
 				vsdW = (vs.x - vz.x)*dW.x + (vs.y - vz.y)*dW.y;
 
-
-
 				//std::cout << "[DENSITY] >> aV: [" << av.x << "," << av.y << "] nV:" << av.x << "," << av.y << "] vl:" << vl << " vr: " << vr << " Vs:" << av.x << "," << av.y << "] Vss: " << vss << " aRho: "<< arho << " nRho: " << nrho << " Rhos:" << rhos << std::endl;
 
-
-
-				//std::cout << "Normal loading... " << std::endl;
-
+				//ALE equations
 				if(particles.data.part_type[particles.cells[cl].cp[n]] == wall)
 				{
 
@@ -176,37 +178,29 @@ void Compute_Density
 					dvn = dv.x*nb.x + dv.y*nb.y;
 					vsn = dv.x*nb.x + dv.y*nb.y;
 
-					drho_temp -=  nrho*dvn*W*dp;
-
-					domega_temp += dvn*W*dp;
-					//domegarho_temp -= 2 * rhos * vsn * W * dp;
+					domega_temp -= dvn*W*dp;
+					//domegarho_temp -= 2 * rhos * vsn * W * dp; //zero due BC
 
 				}
 				else
 				{
 
-					drho_temp += dvdW*m;
-					domega_temp += dvdW*nomega; //tdy muze byt +
+					domega_temp -= dvdW*nomega; //tdy muze byt +
 					domegarho_temp -= 2 * rhos * nomega * vsdW;
 
 				}
-				//std::cout << "Normal loaded. DONE. n = [ " << nb.x << "," << nb.y << " ]drho_temp: " << drho_temp << " nrhp: " << nrho << std::endl;
 
 				gamma += W*m/nrho;
-
-
+				//gamma += W;
 
 				} // cycle over particles in neighbour cells
 
 			} // cycle over neighbour cells
 
 			//Assign density derivative to particle
-
 			if(gamma == 0)
 			{
 
-				//particles.data.drho[particles.cells[zz].cp[i]] = 1000.;
-				particles.data.drho[particles.cells[zz].cp[i]] = 0.;
 				particles.special.domega[particles.cells[zz].cp[i]] = 0.;
 				particles.special.domegarho[particles.cells[zz].cp[i]] = 0.;
 
@@ -214,7 +208,6 @@ void Compute_Density
 			else
 			{
 
-				particles.data.drho[particles.cells[zz].cp[i]] = drho_temp/gamma; //normalize
 				particles.special.domega[particles.cells[zz].cp[i]] = domega_temp*aomega;
 				particles.special.domegarho[particles.cells[zz].cp[i]] = domegarho_temp*aomega;
 
@@ -226,16 +219,9 @@ void Compute_Density
 
 					//av.y << "] nV:" << av.x << "," << av.y << "] vl:" << vl << " vr: " << vr << " Vs:" << av.x << "," << av.y << "] Vss: " << vss << " aRho: "<< arho << " nRho: " << nrho << " Rhos:" << rhos << std::endl;
 
-			drho_temp = 0;
-			dt_temp = 0;
 			gamma = 0;
 			domega_temp = 0;
 			domegarho_temp = 0;
-
-			//std::cout << "..assigned " << std::endl;
-
-			/* Debug */
-			//std::cout << "DENSITY -> Assign drho_temp was SUCCESSFUL. " << drho_temp << std::endl;
 
 		} // cycle over particles in active cell
 

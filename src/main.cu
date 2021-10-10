@@ -1,10 +1,11 @@
 #include "SPH_defs.h"
 
-#include "../cases/RSPH_dambreak_orig/SPH_simulation.h"
+//#include "../cases/RSPH_dambreak_orig/SPH_simulation.h"
 //#include "../cases/RSPH_test_orig/SPH_simulation.h"
 //#include "../cases/RSPH_test_mdbc/SPH_simulation.h"
 //#include "../cases/RSPH_test/SPH_simulation.h"
 
+#include "../cases/ALESPH_dambreak/SPH_simulation.h"
 //#include "../cases/ALESPH_test/SPH_simulation.h"
 //#include "../cases/ALESPH_test_orig/SPH_simulation.h"
 //#include "../cases/ALESPH_test_mdbc/SPH_simulation.h"

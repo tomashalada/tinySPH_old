@@ -150,7 +150,7 @@ void Compute_Acceleration_BT
 
 				rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
 				//vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
-				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
+				//vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
 				//vss = velRiemannLinearizedwithPressure(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
 
 				vs = drn * vss + ((av + nv)*0.5 - drn*(vl + vr)*0.5);

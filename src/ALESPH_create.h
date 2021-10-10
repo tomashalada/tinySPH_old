@@ -277,6 +277,7 @@ void Inlet_x_direction(Particle_system &particles, double x_0, double x_1, doubl
 		}
 	}
 
+
 }
 
 void Inlet_y_direction(Particle_system &particles, double x, double y_0, double y_1 , int orientation, int nbl, realvec v0)
@@ -715,6 +716,75 @@ void Create_Wall_x_bt(Particle_system & particles, double x_0, double x_1, doubl
 			particles.ALESPH_Add_particle(wall, 0, particles.data_const.rho0, r, v, a);
 
 			particles.special.n.push_back(n);
+		}
+	}
+
+}
+
+
+
+void Create_Wall_y_bt(Particle_system & particles, double x, double y_0, double y_1, int orientation, realvec n)
+// orientation +1: -1:
+{
+	real dp = particles.data_const.dp;
+	real kh = particles.data_const.h * particles.data_const.kap;
+	realvec r, v, a;
+	realvec gn;
+
+	//gets length of wall line and number of particles for the wall
+	real len = LEN(x, y_0, x, y_1);
+	int npart = (int)(len/dp);
+	/*if(modulo != 0){Delka hrany nekoresponduje se zadanym NP}*/
+
+	// number of virtual layers
+	int nvl = 1;
+	//nvl = 1;
+
+	for(int l = 0; l < nvl; l++)
+	{
+
+		r.x = x + dp*l*orientation;
+
+		for(int i = 0; i < npart+1; i++)
+		{
+			r.y = y_0 + i*dp;
+			v.x = 0; v.y = 0;
+			a.x = 0; a.y = 0;
+
+			particles.ALESPH_Add_particle(wall, 0, particles.data_const.rho0, r, v, a);
+
+			particles.special.n.push_back(n);
+		}
+	}
+
+}
+
+void Create_corner_bt(Particle_system & particles, int orientationX, int orientationY, realvec xyv, realvec n)
+// orientation +1: -1:
+{
+	real dp = particles.data_const.dp;
+	real kh = particles.data_const.h * particles.data_const.kap;
+	realvec r, v, a;
+	realvec gn;
+
+	// number of virtual layers
+	int nvl = 1;
+
+	for(int l = 0; l < nvl; l++)
+	{
+
+		r.y = xyv.y + dp*l*orientationY;
+
+		for(int i = 0; i < nvl; i++)
+		{
+			r.x = xyv.x + dp*i*orientationX;
+
+			v.x = 0; v.y = 0;
+			a.x = 0; a.y = 0;
+			particles.ALESPH_Add_particle(wall, 0, particles.data_const.rho0, r, v, a);
+
+			particles.special.n.push_back(n);
+
 		}
 	}
 

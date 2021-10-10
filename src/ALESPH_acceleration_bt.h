@@ -44,31 +44,16 @@ void Compute_Acceleration_BT
 		//std::cout << "ACCELERATION -> zz: " << zz << " zp: " << zp << " pp: " << pp << " pz: " << pz << " pm: " << pm << " zm: " << zm << " mm: " << mm << " mz:" << mz << " mp: " << mp << std::endl;
 
 		//Temp. data, temp. variable
-		realvec ac_temp = {0.,0.};
-		realvec ac_temp_visco = {0.,0.};
 		real p_temp = 0;
 		real visco = 0;
 		real gamma = 0;
 		realvec omegaa_temp = {0., 0.};
-
-		real drs; //dr size
-		real drdv; //vect(v) \cdot \nabla W
-		realvec dW; //smoothing function gradient
-		real W;
-		real ndr;
-		real rdW;
 
 		real h = particles.data_const.h;
 		real m = particles.data_const.m;
 		real dp = particles.data_const.dp;
 		real c0 = particles.data_const.cs;
 		real rho0 = particles.data_const.rho0;
-
-		realvec ar; //position of ative particle
-		realvec av; //position of ative particle
-		real arho; //actual particle densiy
-		real ap; //actual particle density
-		real aomega; //ALE
 
 		double *kernel;
 
@@ -81,10 +66,11 @@ void Compute_Acceleration_BT
 			//if(particles.data.part_type[particles.cells[zz].cp[i]] == outlet){continue;}
 			//if(particles.data.part_type[particles.cells[zz].cp[i]] == inlet){continue;}
 
-			/*
-			if(particles.data.part_type[particles.cells[zz].cp[i]] == wall || particles.data.part_type[particles.cells[zz].cp[i]] == virt) {continue;}
-			*/
-
+			realvec ar; //position of ative particle
+			realvec av; //position of ative particle
+			real arho; //actual particle densiy
+			real ap; //actual particle density
+			real aomega; //ALE
 
 			//Load data of actual particle
 			ar = particles.data.r[particles.cells[zz].cp[i]];
@@ -102,10 +88,8 @@ void Compute_Acceleration_BT
 				for(int n = 0; n < particles.cells[cl].cp.size(); n++)
 				{
 
-					if(particles.cells[zz].cp[i] == particles.cells[cl].cp[n]){continue;}
-					/*
-				if(particles.data.part_type[particles.cells[cl].cp[n]] == outletf){continue;}
-				*/
+				if(particles.cells[zz].cp[i] == particles.cells[cl].cp[n]){continue;}
+
 				realvec nr; //position of neighbour particle
 				realvec dr; //position diference
 				realvec nv; //position of neighbour particle
@@ -120,6 +104,13 @@ void Compute_Acceleration_BT
 				nrho = particles.data.rho[particles.cells[cl].cp[n]];
 				np = particles.data.p[particles.cells[cl].cp[n]];
 				nomega = particles.special.omega[particles.cells[cl].cp[n]];
+
+				real drs; //dr size
+				real drdv; //vect(v) \cdot \nabla W
+				realvec dW; //smoothing function gradient
+				real W;
+				real ndr;
+				real rdW;
 
 				//ALESPH
 				real vr, vl; //left and right state
@@ -136,77 +127,75 @@ void Compute_Acceleration_BT
 				dv = av - nv;
 				drs = sqrt(pow(dr.x, 2) + pow(dr.y, 2));
 				drdv = dr.x*dv.x + dr.y*dv.y;
+				drn = dr*(1/drs)*(-1); //unit pair vector
 
 				/* get kernel values
 				double *Wendland_kernel(double r, double h) */
 				kernel = Wendland_kernel(drs, h);
-				dW = dr * kernel[1]; // <--- check this, if its ok
 				W = kernel[0];
+				dW = dr * kernel[1];
 
-				drn = dr*(1/drs)*(-1); //unit pair vector
+				//Riemann problem
 				vl = av.x * drn.x + av.y * drn.y;
 				vr = nv.x * drn.x + nv.y * drn.y;
 
-
-				rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
-				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), c0);
+				//real avgc = cs(arho, rho0, c0) + cs(nrho, rho0, c0);
+				real avgc = c0;
+				rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
+				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
 				//vss = velRiemannLinearizedwithPressure(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
-				vs = drn * vss + ((av + nv)*0.5 - drn*(vl + vr)*0.5);
-				//ps = Compute_Pressure2(rhos,  rho0,  c0);
 
-				ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
+				vs = drn * vss + ((av + nv)*0.5 - drn*(vl + vr)*0.5);
+
+				ps = Compute_Pressure2(rhos,  rho0,  c0);
+				//ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
+				//ps = pRiemannLinearizedWithLimiter(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
+				//rhos = ps/(c0*c0)+ rho0;
 
 				vsdW = (vs.x - dv.x)*dW.x + (vs.y - dv.y)*dW.y;
 				vz = (av + nv)*0.5;
-				//vz = dv;
+				//vz = av;
 
 				//std::cout << "ACCELERATION >> Star/ rhos: " << rhos <<  " vss: " << vss << " vs: [" << vs.x << "," << vs.y << "]" << " drn: [" << drn.x << "," << drn.y << "]" << " W:" << W << \
 				 	"\n 1ID: " << particles.cells[zz].cp[i] << " 2ID: " << particles.cells[cl].cp[n] << " vl: " << vl << " vr:" << vr << " av: [" << av.x << "," << av.y << "]" << " nv: [" << nv.x << "," << nv.y << "]" << std::endl;
 
-				/* pressure term */
-				p_temp = ap/pow(arho, 2) + np/pow(nrho,2);
-				//p_temp = (ap + np)/(arho*nrho);
-
-				/* real Artificial_Viscosity
-				(real h, real drs, real drdv, real rho0, real c0, real alpha) */
-				visco = Artificial_Viscosity(h, drs, drdv, particles.data_const.rho0, particles.data_const.cs, particles.data_const.avisc);
-
-				// <--- check this, if its ok
-
-				//ac_temp = ac_temp - dW*(p_temp + visco)*m; //+= operator is not overloaded yet
-
+				//ALE equations
 				if(particles.data.part_type[particles.cells[cl].cp[n]] == wall)
 				{
 
 					realvec nb = {0., 0.};
 					nb = particles.special.n[particles.cells[cl].cp[n]]*(-1);
+
 					ndr = dr.x*nb.x + dr.y*nb.y;
 
+					realvec rwf;
+					rwf = dr;
 
-					ac_temp.x += p_temp * nb.x * W * dp * nrho;
-					ac_temp.y += p_temp * nb.y * W * dp * nrho;
+					vl = ( av.x * nb.x + av.y * nb.y );
+					vr = -vl;
+
+					//real pR = ap + arho*(particles.data_const.graviy.y*rwf.y);
+					//ps = pRiemannLinearized(arho, nrho, vl, vr, ap, pR, 0.5*(arho + nrho), cs(arho, rho0, c0));
+					//ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), cs(arho, rho0, c0));
+
+					rhos = arho - ((0 - av.x)*nb.x + (0 - av.y)*nb.y)*arho/c0;
+					//rhos = arho + (av.x*nb.x + av.y*nb.y)*arho/cs(arho, rho0, c0);
+					//rhos = arho - ((av.x - av.x)*nb.x + (av.y - av.y)*nb.y)*arho/cs(arho, rho0, c0);
+					//ps = Compute_Pressure(arho, 1000., c0)*90000;
+					ps = Compute_Pressure2(rhos, 1000., c0)*1;
+
+				//	ps = ap + arho * c0 *(av.x*nb.x + av.y*nb.y);
+					//ps = 0;
+
+					omegaa_temp.x -= 2*W*dp*( ps * nb.x);
+					omegaa_temp.y -= 2*W*dp*( ps * nb.y);
 
 					//omegaa_temp.x -= 2*nomega*W*dp*((rhos*vs.x*(vs.x - vz.x) + ps) * nb.x + (rhos*vs.x*(vs.y - vz.y)) * nb.y);
 					//omegaa_temp.y -= 2*nomega*W*dp*((rhos*vs.y*(vs.x - vz.x)) * nb.x + (rhos*vs.y*(vs.y - vz.y) + ps) * nb.y);
 
-					omegaa_temp.x -= 2*nomega*W*dp*( ps * nb.x);
-					omegaa_temp.y -= 2*nomega*W*dp*( ps * nb.y);
-
-
-					ac_temp_visco.x = ac_temp_visco.x - dW.x*(visco )*m;
-					ac_temp_visco.y = ac_temp_visco.y - dW.y*(visco )*m;
-
 				}
 				else
 				{
-
-					//rdW = dr.x * dW.x + dr.y * dW.y;
-
-					//ac_temp.x = ac_temp.x - dW.x*(p_temp )*m;
-					//ac_temp.y = ac_temp.y - dW.y*(p_temp )*m;
-
-					ac_temp_visco.x = ac_temp_visco.x - dW.x*(visco )*m;
-					ac_temp_visco.y = ac_temp_visco.y - dW.y*(visco )*m;
 
 					omegaa_temp.x -= 2*nomega*((rhos*vs.x*(vs.x - vz.x) + ps) * dW.x + (rhos*vs.x*(vs.y - vz.y)) * dW.y);
 					omegaa_temp.y -= 2*nomega*((rhos*vs.y*(vs.x - vz.x)) * dW.x + (rhos*vs.y*(vs.y - vz.y) + ps) * dW.y);
@@ -214,9 +203,7 @@ void Compute_Acceleration_BT
 				}
 
 				gamma += W*m/nrho;
-
-				/* Temp, step */
-				p_temp = 0; visco = 0;
+				//gamma += W;
 
 				} // cycle over particles in neighbour cells
 
@@ -226,30 +213,19 @@ void Compute_Acceleration_BT
 			{
 
 				realvec zero = {0., 0.};
-				particles.data.a[particles.cells[zz].cp[i]] = zero - particles.data_const.graviy;
-				particles.special.omegaa[particles.cells[zz].cp[i]] = zero - particles.data_const.graviy;
+				particles.special.omegaa[particles.cells[zz].cp[i]] = zero - particles.data_const.graviy*aomega*arho;
 
 			}
 			else
 			{
 
-				// particles.data.a[particles.cells[zz].cp[i]] =  ac_temp/gamma +  ac_temp_visco*2*0.001/(gamma * arho) - particles.data_const.graviy;
-
-				//particles.data.a[particles.cells[zz].cp[i]] =  ac_temp/gamma +  ac_temp_visco/gamma - particles.data_const.graviy;
-				//particles.data.a[particles.cells[zz].cp[i]] =  ac_temp/gamma   - particles.data_const.graviy;
-
-				particles.data.a[particles.cells[zz].cp[i]] =  ac_temp/gamma +  ac_temp_visco/gamma - particles.data_const.graviy;
 				particles.special.omegaa[particles.cells[zz].cp[i]] = omegaa_temp*aomega - particles.data_const.graviy*aomega*arho;
 
 			}
 
-				//std::cout << "ACCELERATION2 >> Write/ aomega: " << particles.special.omega[particles.cells[zz].cp[i]] << std::endl;// " omegaa_temp: " << omegaa_temp <<  std::endl;
-
-				idx index = particles.cells[zz].cp[i];
+			//idx index = particles.cells[zz].cp[i];
 			//std::cout << "[ACCELERATION2] >> V: [" << particles.data.v[index].x << "," << particles.data.v[index].y  << "] OmegaV: [" << particles.special.omegav[index].x << "," << particles.special.omegav[index].y << "] Omega: " << particles.special.omega[index] << " dOmegaA: [" << particles.special.omegaa[index].x << "," << particles.special.omegaa[index].x << "] dOmega: " << particles.special.domega[index] << " Omega*G: " << particles.data_const.graviy.y*particles.special.omega[index] << std::endl;
 
-			ac_temp = {0., 0.};
-			ac_temp_visco = {0., 0.};
 			omegaa_temp = {0., 0.};
 			gamma = 0;
 

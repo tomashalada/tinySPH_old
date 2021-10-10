@@ -48,6 +48,7 @@ real Compute_Pressure2
 
 	/* Weakly compressible state equation. */
 	//p = b_const*( pow(rho_r, gamma) - 1 );
+
 	p =c0*c0*( rho - rho0 );
 	//p =c0*c0*( rho0 - rho );
 
