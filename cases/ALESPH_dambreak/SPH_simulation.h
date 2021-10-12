@@ -199,7 +199,7 @@ struct SPH_simulation
 	SPH_simulation
 	()
 	//: particles(hh, kap, 44.29, 1000., dp),
-	: particles(hh, kap, 24.29, 1000., dp),
+	: particles(hh, kap, 34.29, 1000., dp),
 			simulation_data(x_0, x_1, y_0, y_1)
 	{
 

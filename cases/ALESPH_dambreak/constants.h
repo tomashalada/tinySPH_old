@@ -21,7 +21,7 @@
 	unsigned int save_output_interval = 10; //temp, default 25
 	unsigned int save_output_interval_interpolated = 500;
 	unsigned int step = 0; //Time in steps
- unsigned int step_end = 2000; //Endtime in steps;
+ unsigned int step_end = 6000; //Endtime in steps;
 
  std::string output_file_name = "results/particles_";
 	//std::string output_file_name_p_out = "p_out/particles_";

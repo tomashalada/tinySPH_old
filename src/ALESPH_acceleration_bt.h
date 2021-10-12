@@ -148,7 +148,7 @@ void Compute_Acceleration_BT
 				vs = drn * vss + ((av + nv)*0.5 - drn*(vl + vr)*0.5);
 
 				ps = Compute_Pressure2(rhos,  rho0,  c0);
-				//ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
+				ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
 				//ps = pRiemannLinearizedWithLimiter(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
 				//rhos = ps/(c0*c0)+ rho0;
 

@@ -115,7 +115,7 @@ real Boundary_Pressure_ALESPH
 	} // cycle over neighbour cells
 
 	wp = pw_temp;
-	if(wp > 0){std::cout << "[BOUNDARY PRESSURE] Wall pessure: " << wp << std::endl;}
+	//if(wp > 0){std::cout << "[BOUNDARY PRESSURE] Wall pessure: " << wp << std::endl;}
 
 
 	return wp;
