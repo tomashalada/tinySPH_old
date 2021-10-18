@@ -17,6 +17,12 @@ struct SPH_data
 	std::vector<realvec> v;
 	std::vector<realvec> a;
 
+	//TEST
+	std::vector<realvec> v_o;
+	std::vector<realvec> v_oo;
+	std::vector<real> rho_o;
+	std::vector<real> rho_oo;
+
 };
 
 //Mostly const. parameters
@@ -48,8 +54,11 @@ struct SPH_special
 	std::vector<real> domegarho; //ALESPH density and omega change
 	std::vector<realvec> omegaa; //ALESPH acceleration and omega
 	std::vector<real> omegarho;
-
 	std::vector<realvec> omegav;
+
+	std::vector<realvec> gradrho; //ALESPH MUSCL
+	std::vector<realvec> gradvx; //ALESPH MUSCL
+	std::vector<realvec> gradvy; //ALESPH MUSCL
 
 };
 

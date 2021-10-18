@@ -60,8 +60,15 @@ void mDBC_compute_density_mdbcGeo
 			//gnd = r - gn;
 			gnd = gn - r;
 
-			//particles.data.rho[p] = Kernel_density_approximation_mDBC(particles, simulation_data, gn);
-			particles.data.rho[p] = Kernel_density_approximation_MATRIX_mDBC(particles, simulation_data, gn, gnd);
+			/* DEBUG */
+			if(r.x == 0.44)
+			{
+				//std::cout << "WALL PARTICLE POSITION: wr: [" << r.x << "," << r.y << "] gn: [" << gn.x << "," << gn.y << "] gnd: [" << gnd.x << "," << gnd.y << "]" << std::endl;
+			}
+
+			particles.data.rho[p] = Kernel_density_approximation_mDBC(particles, simulation_data, gn);
+			//particles.data.rho[p] = Kernel_density_approximation_MATRIX_mDBC(particles, simulation_data, gn, gnd);
+			//if(particles.data.rho[p] < 1000.){particles.data.rho[p];}
 
 		} // if function - check part type
 

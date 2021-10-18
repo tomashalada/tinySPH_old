@@ -5,7 +5,12 @@
 //#include "../cases/RSPH_test_mdbc/SPH_simulation.h"
 //#include "../cases/RSPH_test/SPH_simulation.h"
 
-#include "../cases/ALESPH_dambreak/SPH_simulation.h"
+//#include "../cases/ALESPH_dambreak/SPH_simulation.h"
+//#include "../cases/damBreak_DBC/SPH_simulation.h"
+//#include "../cases/damBreak_mDBC/SPH_simulation.h"
+
+#include "../cases/stillWater_mDBC/SPH_simulationTwoPartVerlet.h"
+
 //#include "../cases/ALESPH_test/SPH_simulation.h"
 //#include "../cases/ALESPH_test_orig/SPH_simulation.h"
 //#include "../cases/ALESPH_test_mdbc/SPH_simulation.h"

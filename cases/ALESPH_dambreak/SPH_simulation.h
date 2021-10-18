@@ -20,6 +20,7 @@
 
 #include "SPH_mDBC.h"
 #include "ALESPH_boundary_pressure.h"
+#include "ALESPH_kernel_gradient.h"
 
 #include "SPH_inlet_outlet.h" //inlet, outlet, functions
 #include "SPH_inlet_outlet_data.h" //inlet, outlet zones structures
@@ -96,6 +97,7 @@ struct SPH_simulation
 
 		/* Compute density change */
 		Compute_Density(particles);
+		Kernel_gradient_approx(particles);
 		//mDBC_compute_density_bt(particles, simulation_data, dp/2);
 		Wall_pressure(particles, simulation_data);
 		std::cout << "SIMULATION -> RUN: Compute density. DONE. " << std::endl;
@@ -199,7 +201,8 @@ struct SPH_simulation
 	SPH_simulation
 	()
 	//: particles(hh, kap, 44.29, 1000., dp),
-	: particles(hh, kap, 34.29, 1000., dp),
+	//limited : particles(hh, kap, 17.29, 1000., dp),
+	: particles(hh, kap, 24.29, 1000., dp),
 			simulation_data(x_0, x_1, y_0, y_1)
 	{
 

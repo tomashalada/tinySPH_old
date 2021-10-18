@@ -72,12 +72,22 @@ void Compute_Acceleration_BT
 			real ap; //actual particle density
 			real aomega; //ALE
 
+			// *** MUSCL **** //
+			realvec gradarho;
+			realvec gradavx;
+			realvec gradavy;
+
 			//Load data of actual particle
 			ar = particles.data.r[particles.cells[zz].cp[i]];
 			av = particles.data.v[particles.cells[zz].cp[i]];
 			arho = particles.data.rho[particles.cells[zz].cp[i]];
 			ap = particles.data.p[particles.cells[zz].cp[i]];
 			aomega = particles.special.omega[particles.cells[zz].cp[i]];
+
+			// *** MUSCL **** //
+			gradarho = particles.special.gradrho[particles.cells[zz].cp[i]];
+			gradavx = particles.special.gradvx[particles.cells[zz].cp[i]];
+			gradavy =particles.special.gradvy[particles.cells[zz].cp[i]];
 
 
 			for(int &cl: ac)
@@ -98,12 +108,22 @@ void Compute_Acceleration_BT
 				real np; //neighbour pressure
 				real nomega; //ALE
 
+				// *** MUSCL **** //
+				realvec gradnrho;
+				realvec gradnvx;
+				realvec gradnvy;
+
 				//Load data of neighbour particle
 				nr = particles.data.r[particles.cells[cl].cp[n]];
 				nv = particles.data.v[particles.cells[cl].cp[n]];
 				nrho = particles.data.rho[particles.cells[cl].cp[n]];
 				np = particles.data.p[particles.cells[cl].cp[n]];
 				nomega = particles.special.omega[particles.cells[cl].cp[n]];
+
+				// *** MUSCL **** //
+				gradnrho = particles.special.gradrho[particles.cells[cl].cp[n]];
+				gradnvx = particles.special.gradvx[particles.cells[cl].cp[n]];
+				gradnvy = particles.special.gradvy[particles.cells[cl].cp[n]] ;
 
 				real drs; //dr size
 				real drdv; //vect(v) \cdot \nabla W
@@ -122,6 +142,11 @@ void Compute_Acceleration_BT
 				realvec vz;
 				real ps;
 
+				real arhoL;
+				real nrhoR;
+				realvec avL;
+				realvec nvR;
+
 				//Position and velocity difference
 				dr = ar - nr;
 				dv = av - nv;
@@ -135,21 +160,45 @@ void Compute_Acceleration_BT
 				W = kernel[0];
 				dW = dr * kernel[1];
 
+				// *** MUSCL **** //
+				arhoL = MUSCLleft(arho, gradarho, dr);
+				nrhoR = MUSCLright(nrho, gradnrho, dr);
+
+				avL.x = MUSCLleft(av.x, gradavx, dr);
+				avL.y = MUSCLleft(av.y, gradavy, dr);
+
+				nvR.x = MUSCLright(nv.x, gradnvx, dr);
+				nvR.y = MUSCLright(nv.y, gradnvy, dr);
+
+
 				//Riemann problem
-				vl = av.x * drn.x + av.y * drn.y;
-				vr = nv.x * drn.x + nv.y * drn.y;
+				vl = avL.x * drn.x + avL.y * drn.y;
+				vr = nvR.x * drn.x + nvR.y * drn.y;
 
 				//real avgc = cs(arho, rho0, c0) + cs(nrho, rho0, c0);
 				real avgc = c0;
-				rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
-				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
+				rhos = densRiemannLinearized(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
+				//rhos = densRiemannLinearizedWithLimiter(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
+				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arhoL + nrhoR), avgc);
+
+				// //Riemann problem
+				// vl = av.x * drn.x + av.y * drn.y;
+				// vr = nv.x * drn.x + nv.y * drn.y;
+
+				// //real avgc = cs(arho, rho0, c0) + cs(nrho, rho0, c0);
+				// real avgc = c0;
+				// rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
+				// vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
+
 				//vss = velRiemannLinearizedwithPressure(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), c0);
 
 				vs = drn * vss + ((av + nv)*0.5 - drn*(vl + vr)*0.5);
 
 				ps = Compute_Pressure2(rhos,  rho0,  c0);
-				ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
+				//ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
+				//ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
 				//ps = pRiemannLinearizedWithLimiter(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
+				//ps = pRiemannLinearizedWithLimiter(arhoL, nrhoR, vl, vr, ap, np, 0.5*(arhoL + nrhoR), avgc);
 				//rhos = ps/(c0*c0)+ rho0;
 
 				vsdW = (vs.x - dv.x)*dW.x + (vs.y - dv.y)*dW.y;
@@ -178,7 +227,12 @@ void Compute_Acceleration_BT
 					//ps = pRiemannLinearized(arho, nrho, vl, vr, ap, pR, 0.5*(arho + nrho), cs(arho, rho0, c0));
 					//ps = pRiemannLinearized(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), cs(arho, rho0, c0));
 
-					rhos = arho - ((0 - av.x)*nb.x + (0 - av.y)*nb.y)*arho/c0;
+
+					// *** MUSCL **** //
+					rhos = arhoL - ((0 - avL.x)*nb.x + (0 - avL.y)*nb.y)*arhoL/c0;
+
+					//rhos = arho - ((0 - av.x)*nb.x + (0 - av.y)*nb.y)*arho/c0;
+
 					//rhos = arho + (av.x*nb.x + av.y*nb.y)*arho/cs(arho, rho0, c0);
 					//rhos = arho - ((av.x - av.x)*nb.x + (av.y - av.y)*nb.y)*arho/cs(arho, rho0, c0);
 					//ps = Compute_Pressure(arho, 1000., c0)*90000;

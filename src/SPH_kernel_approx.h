@@ -629,7 +629,7 @@ real Kernel_density_approximation_mDBC
 			/* this shloud he here I guess */
 		//if(particles.data.part_type[particles.cells[cl].cp[n]] != fluid){continue;}
 
-		if(particles.data.part_type[particles.cells[cl].cp[n]] == wall){continue;}
+		//if(particles.data.part_type[particles.cells[cl].cp[n]] == wall){continue;}
 		//if(particles.data.part_type[particles.cells[cl].cp[n]] == inlet){continue;}
 
 		//Load data of neighbour particle

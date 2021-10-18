@@ -14,8 +14,6 @@ void Compute_Acceleration
 	ncx = particles.pairs.ncx;
 	ncy = particles.pairs.ncy;
 
-	//Indices of neigbour cells
-
 	#pragma omp parallel for
 	for(int c = 0; c < particles.cells.size(); c++)
 	{
@@ -41,33 +39,14 @@ void Compute_Acceleration
 
 		//Temp. data, temp. variable
 		realvec ac_temp = {0.,0.};
-		real p_temp = 0;
-		real visco = 0;
-
-		real drs; //dr size
-		real drdv; //vect(v) \cdot \nabla W
-		realvec dW; //smoothing function gradient
 
 		real h = particles.data_const.h;
 		real m = particles.data_const.m;
-
-		realvec ar; //position of ative particle
-		realvec nr; //position of neighbour particle
-		realvec dr; //position diference
-
-		realvec av; //position of ative particle
-		realvec nv; //position of neighbour particle
-		realvec dv; //velocity diference
-
-		real nrho; //neighbour density
-		real arho; //actual particle densiy
-
-		real np; //neighbour pressure
-		real ap; //actual particle density
+		real c0 = particles.data_const.cs;
+		real rho0 = particles.data_const.rho0;
 
 		double *kernel;
 
-		//exprimet for(int i = 0; i < particles.cells[zz].np; i++)
 		for(int i = 0; i < particles.cells[zz].cp.size(); i++)
 		{
 
@@ -76,16 +55,21 @@ void Compute_Acceleration
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == outletf){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == outlet){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == inlet){continue;}
-
-			if(particles.data.part_type[particles.cells[zz].cp[i]] == wall || particles.data.part_type[particles.cells[zz].cp[i]] == virt) {continue;}
 			*/
 
-
 			//Load data of actual particle
-			ar = particles.data.r[particles.cells[zz].cp[i]];
-			av = particles.data.v[particles.cells[zz].cp[i]];
-			arho = particles.data.rho[particles.cells[zz].cp[i]];
-			ap = particles.data.p[particles.cells[zz].cp[i]];
+			idx ai = particles.cells[zz].cp[i]; //actual particle index
+
+			realvec ar = particles.data.r[ai];; //position of ative particle
+			realvec av = particles.data.v[ai]; //position of ative particle
+			real arho = particles.data.rho[ai]; //actual particle densiy
+			real ap = particles.data.p[ai]; //actual particle density
+
+			realvec nr; //position of neighbour particle
+			realvec dr; //position diference
+
+
+			realvec dv; //velocity diference
 
 			for(int &cl: ac)
 			{
@@ -100,10 +84,22 @@ void Compute_Acceleration
 				*/
 
 				//Load data of neighbour particle
-				nr = particles.data.r[particles.cells[cl].cp[n]];
-				nv = particles.data.v[particles.cells[cl].cp[n]];
-				nrho = particles.data.rho[particles.cells[cl].cp[n]];
-				np = particles.data.p[particles.cells[cl].cp[n]];
+				idx ni = particles.cells[cl].cp[n]; //actual particle index
+				//if(ai == ni){continue;}
+
+				realvec nr = particles.data.r[ni]; //position of ative particle
+				realvec nv = particles.data.v[ni];; //position of ative particle
+				real nrho = particles.data.rho[ni];; //actual particle densiy
+				real np = particles.data.p[ni];
+
+				//Interation variables
+				realvec dr, dv; //position, velocity difference
+				real drs; //dr size
+				realvec dW; //kernel gradient
+				real drdv; //dot product of velocity dif. and position dif.
+
+				real p_temp = 0; //pressure term
+				real visco = 0; //viscosity term
 
 				//Position and velocity difference
 				dr = ar - nr;
@@ -111,34 +107,29 @@ void Compute_Acceleration
 				drs = sqrt(pow(dr.x, 2) + pow(dr.y, 2));
 				drdv = dr.x*dv.x + dr.y*dv.y;
 
-				/* get kernel values
-				double *Wendland_kernel(double r, double h) */
+				//Assign kernel values
+				//double *Wendland_kernel(double r, double h)
 				kernel = Wendland_kernel(drs, h);
-				dW = dr * kernel[1]; // <--- check this, if its ok
+				dW = dr * kernel[1];
 
-				/* pressure term */
-				p_temp = ap/pow(arho, 2) + np/pow(nrho,2);
-				//p_temp = (ap + np)/(arho*nrho);
+				//Assign acceleration terms
+				//p_temp = ap/pow(arho, 2) + np/pow(nrho,2);
+				p_temp = (ap + np)/(arho*nrho);
+				//visco = Artificial_Viscosity(h, drs, drdv, 0.5*(arho + nrho), c0, particles.data_const.avisc);
+				visco = Artificial_Viscosity(h, drs, drdv, 0.5*(arho + nrho), c0, particles.data_const.avisc);
 
-				/* real Artificial_Viscosity
-				(real h, real drs, real drdv, real rho0, real c0, real alpha) */
-				visco = Artificial_Viscosity(h, drs, drdv, particles.data_const.rho0, particles.data_const.cs, particles.data_const.avisc);
-
-				// <--- check this, if its ok
-				ac_temp.x = ac_temp.x - dW.x*(p_temp + visco)*m;
-				ac_temp.y = ac_temp.y - dW.y*(p_temp + visco)*m;
-
-				//ac_temp = ac_temp - dW*(p_temp + visco)*m; //+= operator is not overloaded yet
-
-				/* Temp, step */
-				p_temp = 0; visco = 0;
+				//Assign sum to particle
+				ac_temp.x -= dW.x*(p_temp + visco)*m;
+				ac_temp.y -= dW.y*(p_temp + visco)*m;
 
 				} // cycle over particles in neighbour cells
 
 			} // cycle over neighbour cells
 
 			//Assign acceleration to particle
-			particles.data.a[particles.cells[zz].cp[i]] = ac_temp - particles.data_const.graviy;
+			particles.data.a[ai] = ac_temp - particles.data_const.graviy;
+
+			//Reset temp. variables
 			ac_temp = {0., 0.};
 
 		} // cycle over particles in active cell

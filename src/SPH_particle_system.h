@@ -38,6 +38,12 @@ struct Particle_system
 		data.v.push_back(_v);
 		data.a.push_back(_a);
 
+		//TEST
+		data.rho_o.push_back(_rho);
+		data.rho_oo.push_back(_rho);
+		data.v_o.push_back(_v);
+		data.v_oo.push_back(_v);
+
 	}
 
 	//Function to create new particles
@@ -57,6 +63,7 @@ struct Particle_system
 		data.v.push_back(_v);
 		data.a.push_back(_a);
 
+
 		//ALESPH variables
 		special.omega.push_back(data_const.dp * data_const.dp);
 		special.domega.push_back(0.);
@@ -64,6 +71,11 @@ struct Particle_system
 		special.omegaa.push_back({0., 0.});
 		special.omegav.push_back(_v*(data_const.dp * data_const.dp));
 		special.omegarho.push_back(_rho*(data_const.dp * data_const.dp));
+
+		//ALESPH MUSCL variables
+		special.gradrho.push_back({0., 0.});
+		special.gradvx.push_back({0., 0.});
+		special.gradvy.push_back({0., 0.});
 
 	}
 
@@ -106,7 +118,7 @@ struct Particle_system
 	Particle_system
 	/*(int _np, double _h, double _kap, double _cs, double _rho0, double _dp) : np(_np)*/
 	/*(int _np, double _h, double _kap, double _cs, double _rho0, double _dp) */
-	(double _h, double _kap, double _cs, double _rho0, double _dp)
+	(double _h, double _kap, double _cs, double _rho0, double _visco, double _dp)
 	{
 
 	np = 0; //system is initialized without particles
@@ -120,7 +132,7 @@ struct Particle_system
 	data_const.graviy = {0., 9.81};
 	//data_const.graviy = {0., 0.};
 	data_const.m = _rho0 / (1/_dp * 1/_dp);
-	data_const.avisc = 0.1;
+	data_const.avisc = _visco;
 	data_const.delta = 0.1;
 
 	}

@@ -21,7 +21,7 @@
 	unsigned int save_output_interval = 25; //temp, default 25
 	unsigned int save_output_interval_interpolated = 250;
 	unsigned int step = 0; //Time in steps
-	unsigned int step_end = 8001; //Endtime in steps;
+	unsigned int step_end = 15001; //Endtime in steps;
 
  std::string output_file_name = "results/particles_";
 	//std::string output_file_name_p_out = "p_out/particles_";
@@ -46,6 +46,9 @@
 	double hh = 1.1*sqrt(2*dp*dp);
 	//double hh = 0.02;
 	int nvl = std::ceil(kap*hh/dp);
+
+	double visco= 0.1;
+	double cs = 27.29; //33.29;
 
 // OUTPUT FILES AND DIRECTORIES
 std::string casePATH = "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/RSPH_dambreak_orig/";

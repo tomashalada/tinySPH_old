@@ -80,7 +80,7 @@ void Create_Wall_y(Particle_system & particles, double x, double y_0, double y_1
 	/*if(modulo != 0){Delka hrany nekoresponduje se zadanym NP}*/
 
 	// number of virtual layers
-	int nvl = std::ceil(kh/dp) ;
+	int nvl = std::ceil(kh/dp) +1;
 	//nvl = 1;
 
 	for(int l = 0; l < nvl; l++)
@@ -609,7 +609,7 @@ void Create_Wall_y_mdbc(Particle_system & particles, double x, double y_0, doubl
 
 			particles.Add_particle(wall, 0, particles.data_const.rho0, r, v, a);
 
-			gn.x = x_w + fabs(r.x - x_w);
+			gn.x = x_w + fabs(r.x - x_w)*(-1)*(orientation);
 			gn.y = r.y;
 			particles.special.gnr.push_back(gn);
 		}
@@ -641,8 +641,8 @@ void Create_corner_mdbc(Particle_system & particles, int orientationX, int orien
 			a.x = 0; a.y = 0;
 			particles.Add_particle(wall, 0, particles.data_const.rho0, r, v, a);
 
-			gn.x = xyv.x + fabs(r.x - xyv.x);
-			gn.y = xyv.y + fabs(r.y - xyv.y);
+			gn.x = xyv.x + fabs(r.x - xyv.x)*(-1)*orientationX;
+			gn.y = xyv.y + fabs(r.y - xyv.y)*(-1)*orientationY;
 			particles.special.gnr.push_back(gn);
 
 		}

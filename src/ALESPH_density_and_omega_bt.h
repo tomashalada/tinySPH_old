@@ -68,12 +68,22 @@ void Compute_Density
 			real aomega; //actual particle volume
 			real ap;
 
+			// *** MUSCL **** //
+			realvec gradarho;
+			realvec gradavx;
+			realvec gradavy;
+
 			//Load data of actual particle
 			ar = particles.data.r[particles.cells[zz].cp[i]];
 			av = particles.data.v[particles.cells[zz].cp[i]];
 			arho = particles.data.rho[particles.cells[zz].cp[i]];
 			aomega = particles.special.omega[particles.cells[zz].cp[i]];
 			ap = particles.data.p[particles.cells[zz].cp[i]];
+
+			// *** MUSCL **** //
+			gradarho = particles.special.gradrho[particles.cells[zz].cp[i]];
+			gradavx = particles.special.gradvx[particles.cells[zz].cp[i]];
+			gradavy =particles.special.gradvy[particles.cells[zz].cp[i]];
 
 			for(int &cl: ac)
 			{
@@ -103,12 +113,22 @@ void Compute_Density
 				real nomega; //neighbour particle
 				real np; //neighbour pressure
 
+				// *** MUSCL **** //
+				realvec gradnrho;
+				realvec gradnvx;
+				realvec gradnvy;
+
 				//Load data of neighbour particle
 				nr = particles.data.r[particles.cells[cl].cp[n]];
 				nv = particles.data.v[particles.cells[cl].cp[n]];
 				nrho = particles.data.rho[particles.cells[cl].cp[n]];
 				nomega = particles.special.omega[particles.cells[cl].cp[n]];
 				np = particles.data.p[particles.cells[cl].cp[n]];
+
+				// *** MUSCL **** //
+				gradnrho = particles.special.gradrho[particles.cells[cl].cp[n]];
+				gradnvx = particles.special.gradvx[particles.cells[cl].cp[n]];
+				gradnvy =particles.special.gradvy[particles.cells[cl].cp[n]] ;
 
 				real drs; //dr size
 				realvec dW; //smoothing function gradient
@@ -123,6 +143,11 @@ void Compute_Density
 				real vss; //v^star, Riemann problem solution
 				realvec vs; //v^star, Riemann problem solution
 				real vsdW;
+
+				real arhoL;
+				real nrhoR;
+				realvec avL;
+				realvec nvR;
 
 				//dif. term
 				realvec Psi;
@@ -141,14 +166,38 @@ void Compute_Density
 				W = kernel[0];
 				dW = dr * kernel[1];
 
+				// *** MUSCL **** //
+				real param_r = 1;
+				real gradn;
+
+				arhoL = MUSCLleft(arho, gradarho, dr, param_r);
+				nrhoR = MUSCLright(nrho, gradnrho, dr, param_r);
+
+				avL.x = MUSCLleft(av.x, gradavx, dr, param_r);
+				avL.y = MUSCLleft(av.y, gradavy, dr, param_r);
+
+				nvR.x = MUSCLright(nv.x, gradnvx, dr, param_r);
+				nvR.y = MUSCLright(nv.y, gradnvy, dr, param_r);
+
 				//Riemann problem
-				vl = av.x * drn.x + av.y * drn.y;
-				vr = nv.x * drn.x + nv.y * drn.y;
+				vl = avL.x * drn.x + avL.y * drn.y;
+				vr = nvR.x * drn.x + nvR.y * drn.y;
 
 				//real avgc = cs(arho, rho0, c0) + cs(nrho, rho0, c0);
 				real avgc = c0;
-				rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
-				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
+				rhos = densRiemannLinearized(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
+				//rhos = densRiemannLinearizedWithLimiter(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
+				vss = velRiemannLinearized(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
+
+				// //Riemann problem
+				// vl = av.x * drn.x + av.y * drn.y;
+				// vr = nv.x * drn.x + nv.y * drn.y;
+
+				// //real avgc = cs(arho, rho0, c0) + cs(nrho, rho0, c0);
+				// real avgc = c0;
+				// rhos = densRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
+				// vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arho + nrho), avgc);
+
 				//vss = velRiemannLinearizedwithPressure(arho, nrho, vl, vr, ap, np, 0.5*(arho + nrho), avgc);
 
 				//***experiment***

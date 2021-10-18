@@ -10,11 +10,13 @@ real Artificial_Viscosity
 	real AV; //Artificial viscosity, \Pi in theory
 	real mu; //-> theory
 
-	if (drdv <= 0)
+	real visco = MAX(drdv, alpha);
+
+	if (drdv < 0)
 	{
 
-		mu = h*drdv / (pow(drs, 2) + eps*h*h);
-		AV = - alpha * c0 * mu / rho0;
+		mu = h*drdv / (drs*drs + eps*h*h);
+		AV = - visco * c0 * mu / rho0;
 
 	}
 	else

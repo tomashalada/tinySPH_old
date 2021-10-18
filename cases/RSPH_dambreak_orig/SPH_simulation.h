@@ -25,6 +25,7 @@
 #include "SPH_inlet_outlet_data.h" //inlet, outlet zones structures
 
 #include "SPH_shifting.h"
+#include "SPH_btdebug.h"
 
 struct SPH_simulation
 {
@@ -122,6 +123,9 @@ struct SPH_simulation
 		Integrate_LeapFrog_partTwo(particles, dt, step);
 		std::cout << "SIMULATION -> RUN: Second part integraion. DONE. " << std::endl;
 
+	 RemoveParticlesOutOfDomain(particles, simulation_data);
+		std::cout << "SIMULATION -> RUN: Remove particles out of domain. DONE. " << std::endl;
+
 		//real csm;
 		//real vnorm;
 		//csm = NORM(particles.data.v[0].x, particles.data.v[0].y);
@@ -211,7 +215,7 @@ struct SPH_simulation
 	SPH_simulation
 	()
 	//: particles(hh, kap, 44.29, 1000., dp),
-	: particles(hh, kap, 33.29, 1000., dp),
+	: particles(hh, kap, cs, 1000., visco, dp),
 			simulation_data(x_0, x_1, y_0, y_1)
 	{
 

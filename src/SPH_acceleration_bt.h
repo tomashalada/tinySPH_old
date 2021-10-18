@@ -305,7 +305,7 @@ void Compute_Acceleration_BT
 					/*
 				if(particles.data.part_type[particles.cells[cl].cp[n]] == outletf){continue;}
 				*/
-
+				if(particles.cells[zz].cp[i] == particles.cells[cl].cp[n]){continue;}
 				//Load data of neighbour particle
 				nr = particles.data.r[particles.cells[cl].cp[n]];
 				nv = particles.data.v[particles.cells[cl].cp[n]];
@@ -354,15 +354,16 @@ void Compute_Acceleration_BT
 					//ac_temp.y += (p_temp + visco) * nb.y * W * dp * nrho;
 
 					//THIS DO SOMETING
-					ac_temp_visco.x = ac_temp_visco.x - dW.x*(visco )*m;
-					ac_temp_visco.y = ac_temp_visco.y - dW.y*(visco )*m;
+					//ac_temp_visco.x = ac_temp_visco.x - dW.x*(visco )*m;
+					//ac_temp_visco.y = ac_temp_visco.y - dW.y*(visco )*m;
 					/*
 					*/
 
-					/*
-					ac_temp_visco.x = ac_temp_visco.x - nb.x * W * (visco )*m;
-					ac_temp_visco.y = ac_temp_visco.y - nb.y * W * (visco )*m;
-					*/
+					ac_temp_visco.x += W*dp*(dr.x*nb.x + dr.y*nb.y)*dv.x/(drs*drs);
+					ac_temp_visco.y += W*dp*(dr.x*nb.x + dr.y*nb.y)*dv.y/(drs*drs);
+
+					//ac_temp_visco.x = ac_temp_visco.x - nb.x * W * (visco )*dp;
+					//ac_temp_visco.y = ac_temp_visco.y - nb.y * W * (visco )*dp;
 
 				}
 				else
@@ -379,8 +380,10 @@ void Compute_Acceleration_BT
 					//ac_temp_visco.x = ac_temp_visco.x + dv.x * rdW * m / (nrho * drs * drs);
 					//ac_temp_visco.y = ac_temp_visco.y + dv.y * rdW * m / (nrho * drs * drs);
 
-					ac_temp_visco.x = ac_temp_visco.x - dW.x*(visco )*m;
-					ac_temp_visco.y = ac_temp_visco.y - dW.y*(visco )*m;
+					//ac_temp_visco.x = ac_temp_visco.x - dW.x*(visco )*m;
+					//ac_temp_visco.y = ac_temp_visco.y - dW.y*(visco )*m;
+					ac_temp_visco.x = ac_temp_visco.x - dv.x*(dW.x*dr.x + dW.y*dr.y)*m/(nrho*drs*drs);
+					ac_temp_visco.y = ac_temp_visco.y - dv.y*(dW.x*dr.x + dW.y*dr.y)*m/(nrho*drs*drs);
 
 				}
 
@@ -408,7 +411,8 @@ void Compute_Acceleration_BT
 				//particles.data.a[particles.cells[zz].cp[i]] =  ac_temp/gamma +  ac_temp_visco/gamma - particles.data_const.graviy;
 				//particles.data.a[particles.cells[zz].cp[i]] =  ac_temp/gamma   - particles.data_const.graviy;
 
-				particles.data.a[particles.cells[zz].cp[i]] =  ac_temp/gamma +  ac_temp_visco/gamma - particles.data_const.graviy;
+				//particles.data.a[particles.cells[zz].cp[i]] =  ac_temp/gamma +  ac_temp_visco/gamma - particles.data_const.graviy;
+				particles.data.a[particles.cells[zz].cp[i]] =  ac_temp/gamma +  ac_temp_visco*0.001*2/(gamma*arho) - particles.data_const.graviy;
 
 			}
 			ac_temp = {0., 0.};

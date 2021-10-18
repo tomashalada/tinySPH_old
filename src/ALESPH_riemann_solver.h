@@ -26,7 +26,7 @@ real densRiemannLinearizedWithLimiter
 	real p;
 	real eta = 3.;
 	real beta = MIN(eta*MAX(vL-vR, 0), c);
-	rho = 0.5*(rhoL + rhoR) + 0.5*(vL - vR)*rhoAvg/c;
+	rho = 0.5*(rhoL + rhoR) + 0.5*beta*(vL - vR)*rhoAvg/(c*c);
 	//rho = 0.5*(rhoL + rhoR);// - 0.5*(vR - vL)*rhoAvg/c;
 
 	return rho;
@@ -123,3 +123,58 @@ real cs
 	return cs;
 
 }
+
+real minmod
+(real r)
+{
+
+	real fi;
+	fi = MAX(0, MIN(1,r));
+	return fi;
+
+}
+
+//MUSCL: Update L and R state
+real MUSCLleft
+(real A, realvec gradA, realvec dr)
+{
+
+	real AL = A + 0.5*(gradA.x * dr.x + gradA.y * dr.y);
+
+	return AL;
+
+}
+
+real MUSCLright
+(real A, realvec gradA, realvec dr)
+{
+
+	real AR = A - 0.5*(gradA.x * dr.x + gradA.y * dr.y);
+
+	return AR;
+
+}
+
+
+//MUSCL: Update L and R state with limiter
+real MUSCLleft
+(real A, realvec gradA, realvec dr, real alpha)
+{
+
+	real AL = A - alpha*0.5*(gradA.x * dr.x + gradA.y * dr.y);
+
+	return AL;
+
+}
+
+real MUSCLright
+(real A, realvec gradA, realvec dr, real alpha)
+{
+
+	real AR = A + alpha*0.5*(gradA.x * dr.x + gradA.y * dr.y);
+
+	return AR;
+
+}
+
+
