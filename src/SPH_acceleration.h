@@ -14,6 +14,8 @@ void Compute_Acceleration
 	ncx = particles.pairs.ncx;
 	ncy = particles.pairs.ncy;
 
+	real dtcv = 0;
+
 	#pragma omp parallel for
 	for(int c = 0; c < particles.cells.size(); c++)
 	{
@@ -46,6 +48,9 @@ void Compute_Acceleration
 		real rho0 = particles.data_const.rho0;
 
 		double *kernel;
+
+		real dt_visco = 0;
+		real dtacc = 0;
 
 		for(int i = 0; i < particles.cells[zz].cp.size(); i++)
 		{
@@ -104,7 +109,7 @@ void Compute_Acceleration
 				//Position and velocity difference
 				dr = ar - nr;
 				dv = av - nv;
-				drs = sqrt(pow(dr.x, 2) + pow(dr.y, 2));
+				drs = sqrt((dr.x*dr.x) + (dr.y*dr.y));
 				drdv = dr.x*dv.x + dr.y*dv.y;
 
 				//Assign kernel values
@@ -115,16 +120,33 @@ void Compute_Acceleration
 				//Assign acceleration terms
 				//p_temp = ap/pow(arho, 2) + np/pow(nrho,2);
 				p_temp = (ap + np)/(arho*nrho);
-				//visco = Artificial_Viscosity(h, drs, drdv, 0.5*(arho + nrho), c0, particles.data_const.avisc);
-				visco = Artificial_Viscosity(h, drs, drdv, 0.5*(arho + nrho), c0, particles.data_const.avisc);
+				real alpha = particles.data_const.avisc;
+				//if(particles.data.p[ni] == wall){alpha = alpha*(-1)*100;}
+				visco = Artificial_Viscosity(h, drs, drdv, 0.5*(arho + nrho), c0, alpha);
+
+				real dt_visco_i = 0;
+				dt_visco_i = fabs(h*drdv/(drs*drs));
+				//std::cout << "dt_visco_i: " << dt_visco_i << std::endl;
+				if(dt_visco_i > dt_visco){ dt_visco =  dt_visco_i; }
 
 				//Assign sum to particle
 				ac_temp.x -= dW.x*(p_temp + visco)*m;
 				ac_temp.y -= dW.y*(p_temp + visco)*m;
 
+				p_temp = 0;
+				visco = 0;
+
 				} // cycle over particles in neighbour cells
 
 			} // cycle over neighbour cells
+			real dtcv_tp = h/(c0 + dt_visco);
+			if(dtcv_tp > dtcv)
+			{
+					#pragma critical
+					{
+					if(dtcv_tp > dtcv) dtcv = dtcv_tp;
+					}
+			}
 
 			//Assign acceleration to particle
 			particles.data.a[ai] = ac_temp - particles.data_const.graviy;
@@ -134,7 +156,10 @@ void Compute_Acceleration
 
 		} // cycle over particles in active cell
 
+
+
 	} // cycle over cells
+	particles.special.dtcv_temp = dtcv;
 
 	#pragma omp barrier
 

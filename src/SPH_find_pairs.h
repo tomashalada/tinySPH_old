@@ -8,7 +8,7 @@ void Divide_To_Cells
 {
 
 	real kh, of;
-	kh = particles.data_const.kap*particles.data_const.h*2;
+	kh = particles.data_const.kap*particles.data_const.h;
 	//kh = particles.data_const.kap*particles.data_const.h;
 	of = particles.data_const.h*0.273;
 	//of = 0;

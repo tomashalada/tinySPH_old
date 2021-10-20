@@ -67,6 +67,8 @@ void mDBC_compute_density_mdbcGeo
 			}
 
 			particles.data.rho[p] = Kernel_density_approximation_mDBC(particles, simulation_data, gn);
+			if(particles.data.rho[p] < particles.data_const.rho0)
+			particles.data.rho[p] = particles.data_const.rho0;
 			//particles.data.rho[p] = Kernel_density_approximation_MATRIX_mDBC(particles, simulation_data, gn, gnd);
 			//if(particles.data.rho[p] < 1000.){particles.data.rho[p];}
 

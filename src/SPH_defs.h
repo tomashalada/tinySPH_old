@@ -14,6 +14,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <array>
+#include <cfloat>
 
 #include <algorithm>
 #include <initializer_list>

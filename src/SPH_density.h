@@ -60,9 +60,9 @@ void Compute_Density
 			//Load data of actual particle
 			idx ai = particles.cells[zz].cp[i]; //actual particle index
 
-			realvec ar = particles.data.r[ai];; //position of ative particle
-			realvec av = particles.data.v[ai];; //position of ative particle
-			real arho = particles.data.rho[ai];; //actual particle densiy
+			realvec ar = particles.data.r[ai]; //position of ative particle
+			realvec av = particles.data.v[ai]; //position of ative particle
+			real arho = particles.data.rho[ai]; //actual particle densiy
 
 
 			for(int &cl: ac)
@@ -86,8 +86,8 @@ void Compute_Density
 							particles.data.part_type[particles.cells[cl].cp[n]] == outletf) {continue;}
 
 					*/
-				//if(particles.data.part_type[particles.cells[zz].cp[i]] == wall &&
-				//			particles.data.part_type[particles.cells[cl].cp[n]] == wall) {continue;}
+				if(particles.data.part_type[particles.cells[zz].cp[i]] == wall &&
+							particles.data.part_type[particles.cells[cl].cp[n]] == wall) {continue;}
 
 
 				//Load data of neighbour particle
@@ -120,25 +120,33 @@ void Compute_Density
 				dvdW = dv.x*dW.x + dv.y*dW.y;
 
 				//Assign diffusive term valuse
-				//Psi.x =  (dr.x / (pow(drs,2) + eps*h*h))* 2 * (arho - nrho);
-				//Psi.y =  (dr.y / (pow(drs,2) + eps*h*h))* 2 * (arho - nrho);
+				Psi.x =  (dr.x / (pow(drs,2) + eps*h*h))* 2 * (arho - nrho);
+				Psi.y =  (dr.y / (pow(drs,2) + eps*h*h))* 2 * (arho - nrho);
 
-				 real dpH = rho0* dr.y * particles.data_const.graviy.y;
-				 real cb = c0*c0*rho0 / 7.;
-				 //real drhoH = rho0 * (pow(((dpH + 1)/cb),1/7) - 1);
-				 real drhoH = rho0 * (pow(((dpH + 1)/cb),1/7) - 1);
+				//real Ps =  2 * (arho - nrho)/ (drs + eps*h*h);
 
-			  Psi.x =  (dr.x / (pow(drs,2) + eps*h*h))* 2 * ((arho - nrho) - drhoH);
-			  Psi.y =  (dr.y / (pow(drs,2) + eps*h*h))* 2 * ((arho - nrho) - drhoH);
+				// real dpH = rho0* dr.y * particles.data_const.graviy.y;
+				// real cb = c0*c0*rho0 / 7.;
+				// real drhoH = rho0 * (pow(((dpH + 1)/cb),1/7) - 1);
 
-				PsidW = Psi.x*dW.x + Psi.y*dW.y;
+				real cb = c0*c0*rho0 / 7.;
+				real dpH = 1. + dr.y * particles.data_const.graviy.y/cb;
+				real drhoH = rho0 * pow(dpH,1./7.) - rho0;
+
+			 Psi.x =  (dr.x / (pow(drs,2) + eps*h*h))* 2 * ((nrho - arho) - drhoH);
+			 Psi.y =  (dr.y / (pow(drs,2) + eps*h*h))* 2 * ((nrho - arho) - drhoH);
+
+				real Ps = ((nrho - arho) - drhoH) / (drs*drs + eps*h*h);
+				real drdW = dr.x * dW.x + dr.y * dW.y;
+
+				PsidW = c0*m*delta*2*h * Ps *drdW;
 
 				//Add pair increment
 				drho_temp += dvdW*m/nrho;
 
 				//drho_temp += dvdW*m;
 				//if(particles.data.part_type[ni] != wall){
-				dt_temp += h*delta*c0*PsidW * m/ nrho;
+				dt_temp -= PsidW / nrho;
 				//}
 
 				} // cycle over particles in neighbour cells

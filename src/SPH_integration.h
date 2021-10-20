@@ -215,7 +215,7 @@ void Integrate_LeapFrog_partTwo_withDensity
 
 				particles.data.v[p] = particles.data.v[p] + particles.data.a[p] * dt * 0.5;
 				particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt * 0.5;
-				particles.data.rho[p] = particles.data.rho[p] + particles.data.drho[p] * dt * 0.5;
+				//particles.data.rho[p] = particles.data.rho[p] + particles.data.drho[p] * dt * 0.5;
 
 			} // if function - check part type
 
@@ -318,3 +318,81 @@ void Integrate_Verlet_partTwo
 
 } // function
 
+
+real ComputeDT
+(Particle_system &particles, real dt0)
+{
+
+	real h = particles.data_const.h;
+
+	real dt;
+	real dtf = dt0;
+	real dtcv = particles.special.dtcv_temp;
+
+	real hfactor = pow(h,0.5);
+	real dtf_min = hfactor / NORM(particles.data.a[0].x, particles.data.a[0].y);
+
+	for(int p = 0; p < particles.np; p++)
+	{
+		if(particles.data.part_type[p] == fluid)
+		{
+			real dtf_i = hfactor / NORM(particles.data.a[p].x, particles.data.a[p].y);
+			if( dtf_i < dtf_min ){ dtf_min = dtf_i; }
+
+		}
+	}
+
+	std::cout << "[COMPUTE DT] >> dtf_min: " << dtf_min << " dtcv: " << dtcv << " dt_prev: " << dt0 << std::endl;
+	dt =  0.3*MIN(dtf_min, dtcv);
+	std::cout << "[COMPUTE DT] >> dtf_min: " << dtf_min << " dtcv: " << dtcv << " dt_result: " << dt << std::endl;
+	std::cout << dt << std::endl;
+	return dt;
+
+
+
+}
+
+
+void Integrate_SymplecticPredictor
+(Particle_system &particles, double dt)
+{
+	#pragma omp parallel for schedule(static)
+	for(int p = 0; p < particles.np; p++)
+	{
+		//if(particles.data.part_type[p] == fluid)
+		{
+
+			particles.data.rho_o[p] = particles.data.rho[p];
+			particles.data.r_o[p] = particles.data.r[p];
+			particles.data.v_o[p] = particles.data.v[p];
+
+			particles.data.rho[p] = particles.data.rho[p] + particles.data.drho[p]*dt *0.5;
+			particles.data.r[p] = particles.data.r[p] + particles.data.v[p]*dt*0.5;
+			particles.data.v[p] = particles.data.v[p] + particles.data.a[p]*dt *0.5;
+
+			//if(particles.data.rho[p] < particles.data_const.rho0){particles.data.rho[p] < particles.data_const.rho0;}
+
+		} // if function - check part type
+	} // cycle over particles
+} // function
+
+void Integrate_SymplecticCorrector
+(Particle_system &particles, double dt)
+{
+	#pragma omp parallel for schedule(static)
+	for(int p = 0; p < particles.np; p++)
+	{
+		//if(particles.data.part_type[p] == fluid)
+		{
+
+			real epsilon = (-particles.data.drho[p]/particles.data.rho[p])*dt;
+			particles.data.rho[p] = particles.data.rho_o[p] * ((2. - epsilon) / (2. + epsilon));
+
+			//if(particles.data.rho[p] < particles.data_const.rho0){particles.data.rho[p] < particles.data_const.rho0;}
+
+			particles.data.v[p] = particles.data.v_o[p] + particles.data.a[p]*dt *0.5;
+			particles.data.r[p] = particles.data.r_o[p] + (particles.data.v[p] + particles.data.v_o[p])*dt*0.5;
+
+		} // if function - check part type
+	} // cycle over particles
+} // function

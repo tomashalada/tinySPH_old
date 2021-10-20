@@ -18,6 +18,7 @@ struct SPH_data
 	std::vector<realvec> a;
 
 	//TEST
+	std::vector<realvec> r_o;
 	std::vector<realvec> v_o;
 	std::vector<realvec> v_oo;
 	std::vector<real> rho_o;
@@ -59,6 +60,8 @@ struct SPH_special
 	std::vector<realvec> gradrho; //ALESPH MUSCL
 	std::vector<realvec> gradvx; //ALESPH MUSCL
 	std::vector<realvec> gradvy; //ALESPH MUSCL
+
+	real dtcv_temp=0;
 
 };
 

@@ -39,6 +39,7 @@ struct Particle_system
 		data.a.push_back(_a);
 
 		//TEST
+		data.r_o.push_back(_r);
 		data.rho_o.push_back(_rho);
 		data.rho_oo.push_back(_rho);
 		data.v_o.push_back(_v);

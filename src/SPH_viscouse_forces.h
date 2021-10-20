@@ -2,12 +2,12 @@
 
 #include "SPH_defs.h"
 
-/* Artificial viscosity */
+// ========== ARTIFICIAL VISCOSITY ========== //
 real Artificial_Viscosity
 (real h, real drs, real drdv, real rho0, real c0, real alpha)
 {
 
-	real AV; //Artificial viscosity, \Pi in theory
+	real AV = 0; //Artificial viscosity, \Pi in theory
 	real mu; //-> theory
 
 	real visco = MAX(drdv, alpha);
@@ -19,21 +19,39 @@ real Artificial_Viscosity
 		AV = - visco * c0 * mu / rho0;
 
 	}
-	else
-	{
-
-		AV = 0;
-
-	}
 
 	return AV;
 }
 
-/* Artificial viscosity */
-real Laminar_and_SPS_Viscosity
-()
+// ========== DENS. DIFFUSION TERMS ========== //
+real Density_Diffusion_term_MOLTENI
+(real h, real drs, real drdW, real arho, real nrho, real c0, real delta, real m)
 {
-	real AV = 0;
 
-	return AV;
+	real DT;
+	real PSI_s; //psi scalar (without dr)
+
+	PSI_s = 2. * c0 * h * delta * (nrho - arho) / (drs*drs + eps*h*h);
+	DT = PSI_s * drdW * m / nrho;
+
+	return DT;
+
+}
+
+real Density_Diffusion_term_FOURTAKAS
+(real h, real drs, real dr_z, real drdW, real arho, real nrho, real rho0, real c0, real delta, real m, real gravity)
+{
+
+	real DT;
+	real PSI_s; //psi scalar (without dr)
+
+	const real cb = c0 * c0 * rho0 / 7.;
+	const real dpH = 1. + dr_z * gravity / cb;
+	const real drhoH = rho0 * pow(dpH, 1./7) - rho0;
+
+	PSI_s = 2. * c0 * h * delta * ((nrho - arho) - drhoH) / (drs*drs + eps*h*h);
+	DT = PSI_s * drdW * m / nrho;
+
+	return DT;
+
 }
