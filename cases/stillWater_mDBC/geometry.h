@@ -19,8 +19,8 @@
 						//disabled Create_Wall_y(particles, 0., 0 + dp, 0.4 , -1);
 						//disabled Create_Wall_y(particles, 2., 0 + dp, 0.4 , +1);
 
-		Create_Block_of_Fluid(particles, 0 + dp, 0 + dp, 0.6, 0.5);
-	//	Create_Block_of_FluidWP(particles, 0 + dp, 0 + dp, 0.6, 0.5);
+		//Create_Block_of_Fluid(particles, 0 + dp, 0 + dp, 0.6, 0.5);
+		Create_Block_of_FluidWP(particles, 0 + dp, 0 + dp, 0.6, 0.5);
 		//Create_Block_of_Fluid(particles, 0.3 + dp, 0.2 + dp, 0.6, 0.5);
 		//Create_Block_of_Fluid_with_speed(particles, 0.15, 0 + dp , 0.85, 0.2, {2. , 0.});
 

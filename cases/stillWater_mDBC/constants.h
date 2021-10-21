@@ -17,16 +17,18 @@
 	//real dt = 0.0001; //temp
 
 //	real dt = 0.00005; //temp
-	real dt = 0.00001; //temp
+//	real dt = 0.00005; //temp
+	real dt = 0.000075; //temp
 	//real dt = 0.0001; //temp
-	real kap = 2.;
+	real kap = 2.1;
 
 
 
 	unsigned int save_output_interval = 200; //temp, default 25
 	unsigned int save_output_interval_interpolated = 1000;
 	unsigned int step = 0; //Time in steps
-	unsigned int step_end = 20001; //Endtime in steps;
+	//unsigned int step_end = 20001; //Endtime in steps;
+	unsigned int step_end = 60001; //Endtime in steps;
 
  std::string output_file_name = "results/particles_";
 	//std::string output_file_name_p_out = "p_out/particles_";
@@ -49,9 +51,10 @@
 	/*** Help & temp variables ***/
 	//double cs = 42.48;
 	double cs = 42.48;
+//	double visco = 0.01;
 	double visco = 0.01;
 
-	//double hh = 1.1*sqrt(2*dp*dp);
+//	double hh = 1.1*sqrt(2*dp*dp);
 	double hh = 2.*dp;
 	//double hh = 0.02;
 	int nvl = std::ceil(kap*hh/dp);
@@ -61,7 +64,7 @@ std::string casePATH = "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/s
 
 std::string fileName_resultsFluidOnly = casePATH + "OUTPUT/resultsFluidOnly/partFluidOnly_";
 
-std::string fileName_resultsAll = casePATH + "OUTPUT/resultsAll/partAll_";
+std::string fileName_resultsAll = casePATH + "OUTPUT/resultsAll/_partAll_";
 
 std::string fileName_resultsInterpol = casePATH + "OUTPUT/resultsInterpolated/fieldInterpolated_";
 

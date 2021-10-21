@@ -55,7 +55,7 @@ void Compute_Density
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == outletf){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == outlet){continue;}
 			if(particles.data.part_type[particles.cells[zz].cp[i]] == inlet){continue;}
-			if(particles.data.part_type[particles.cells[zz].cp[i]] == wall){continue;}
+			//if(particles.data.part_type[particles.cells[zz].cp[i]] == wall){continue;}
 
 			//Load data of actual particle
 			idx ai = particles.cells[zz].cp[i]; //actual particle index

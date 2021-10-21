@@ -9,12 +9,13 @@
 //#include "../cases/damBreak_DBC/SPH_simulation.h"
 //#include "../cases/damBreak_mDBC/SPH_simulation.h"
 
-#include "../cases/damBreak_mDBC/SPH_simulationSymplectic.h"
+//#include "../cases/damBreak_mDBC/SPH_simulationSymplectic.h"
 
 //#include "../cases/stillWater_mDBC/SPH_simulationTwoPartVerlet.h"
 //#include "../cases/stillWater_mDBC/SPH_simulationVerlet.h"
 
-//#include "../cases/stillWater_mDBC/SPH_simulationSymplectic.h"
+#include "../cases/stillWater_mDBC/SPH_simulationSymplectic.h"
+//#include "../cases/stillWater_mDBC/SPH_simulationSymplecticDBC.h"
 
 //#include "../cases/stillWater_mDBC/SPH_simulationLeapFrog.h"
 

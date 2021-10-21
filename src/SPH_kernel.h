@@ -12,7 +12,7 @@
 //
 //	if (rs <= 2.0){
 //		smooth_fc[0] = (pow((1-rs/2),4)*(2*rs + 1)) * dim_param;
-//		smooth_fc[1] = -2.7852/(h*h*h)*(pow((1-rs/2),3))*rs/r;
+//		smooth_fc[1] = -2.7852/(h*h*h)*(pow((1-rs/2),3))/r;
 //	}
 //	else{
 //		smooth_fc[0] = 0.0;

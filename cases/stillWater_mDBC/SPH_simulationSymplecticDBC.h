@@ -11,6 +11,7 @@
 
 //#include "SPH_integration.h"
 #include "SPH_integration.h"
+#include "SPH_interaction.h"
 #include "SPH_moving_boundary.h"
 
 #include "SPH_output_info.h"
@@ -42,16 +43,12 @@ struct SPH_simulation
 
 		// Create grid for co-interacting pairs
 		Divide_To_Cells(particles, simulation_data);
-
 		// Initial contidion to VTK
 		write_to_ASCII_VTK(particles, fileName_initCond);
-
 		/* Test */
 		Particle_To_Cell(particles, simulation_data);
-
 		// Grid to VTK
 		write_mesh_to_ASCII_VTK(particles, simulation_data);
-
 		// Simulation info
 		Output_file(particles.data_const, simulation_data, fileName_info);
 
@@ -65,23 +62,17 @@ struct SPH_simulation
 		/* Main time loop. */
 		while(step < step_end)
 		{
-
 		step++;
 		std::cout << "SIMULATION -> RUN: Step: " << step << std::endl;
 
+		//mDBC_compute_density_mdbcGeo(particles, simulation_data);
+		Integrate_density_compute_pressure(particles, dt);
+		std::cout << "SIMULATION -> RUN: Compute density. DONE. " << std::endl;
+
 		/* First part of integration */
-		if(step > 1)
-		{
-
-			Integrate_LeapFrog_partOne(particles, dt);
-
-		}
-		std::cout << "SIMULATION -> RUN: First part integraion. DONE. " << std::endl;
-
-		/* Moving boundary, TEMP */
-		// Moving_boundary(particles, dp);
-		// Moving_boundary(particlesHR, dpHR);
-		// std::cout << "SIMULATION -> RUN: Moving boundary. DONE. " << std::endl;
+		//if(step > 1)
+		Integrate_SymplecticPredictor(particles, dt);
+		std::cout << "SIMULATION -> RUN: First part of integraion. DONE. " << std::endl;
 
 		/* Clear cells, TEMP */
 		Clear_cells(particles);
@@ -91,30 +82,59 @@ struct SPH_simulation
 		Particle_To_Cell(particles, simulation_data);
 		std::cout << "SIMULATION -> RUN: Particles to cells. DONE. " << std::endl;
 
-		/* Compute density change */
-		Compute_Density(particles);
-		//mDBC_compute_density(particles, simulation_data, dp/2);
-		mDBC_compute_density_mdbcGeo(particles, simulation_data);
-		std::cout << "SIMULATION -> RUN: Compute density. DONE. " << std::endl;
 
 		/* Integrate densiy and compute pressure, CHANGE */
 		Integrate_density_compute_pressure(particles, dt);
 		std::cout << "SIMULATION -> RUN: Integrate density. DONE. " << std::endl;
 
-		/* Compute acceleration */
+		// /* Compute density change */
+		// Compute_Density(particles);
+		// /* Compute acceleration */
+		// Compute_Acceleration(particles);
+
+		//Compute_Forces(particles);
+		Compute_Density(particles);
 		Compute_Acceleration(particles);
 		std::cout << "SIMULATION -> RUN: Compute acceleration. DONE. " << std::endl;
 
-		ComputeDT(particles, dt);
+		//dt = ComputeDT(particles, dt);
 
 		/* Second part of integration */
-		Integrate_LeapFrog_partTwo(particles, dt, step);
+		Integrate_SymplecticCorrector(particles, dt);
 		std::cout << "SIMULATION -> RUN: Second part integraion. DONE. " << std::endl;
 
 		/*BT stuff*/
+		//mDBC_compute_density_mdbcGeo(particles, simulation_data);
+		Integrate_density_compute_pressure(particles, dt);
+		std::cout << "SIMULATION -> RUN: Compute density. DONE. " << std::endl;
 
 	 RemoveParticlesOutOfDomain(particles, simulation_data);
 		std::cout << "SIMULATION -> RUN: Remove particles out of domain. DONE. " << std::endl;
+
+		/* Clear cells, TEMP */
+		Clear_cells(particles);
+		std::cout << "SIMULATION -> RUN: Clear cells. DONE. " << std::endl;
+
+		/* Particles to cells (find neihgbours) */
+		Particle_To_Cell(particles, simulation_data);
+		std::cout << "SIMULATION -> RUN: Particles to cells. DONE. " << std::endl;
+
+
+		/* Integrate densiy and compute pressure, CHANGE */
+		Integrate_density_compute_pressure(particles, dt);
+		std::cout << "SIMULATION -> RUN: Integrate density. DONE. " << std::endl;
+
+		// /* Compute density change */
+		// Compute_Density(particles);
+		// /* Compute acceleration */
+		// Compute_Acceleration(particles);
+
+		//Compute_Forces(particles);
+		Compute_Density(particles);
+		Compute_Acceleration(particles);
+		std::cout << "SIMULATION -> RUN: Compute acceleration. DONE. " << std::endl;
+
+		//dt = ComputeDT(particles, dt);
 
 		#pragma omp barrier
 
@@ -167,7 +187,7 @@ struct SPH_simulation
 
 			//void GenerateInterpol
 			//(Particle_system &particles, Simulation_data simulation_data, std::string fname, int step, real x0, real y0, real xm, real ym)
-			GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.0, 0., 0.6, 0.7);
+			GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.0, 0., 0.8, 0.7);
 			std::cout << "[INTERPOLATION - DONE and SAVED.]" << std::endl;
 		}
 

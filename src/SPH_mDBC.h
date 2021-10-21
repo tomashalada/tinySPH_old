@@ -6,38 +6,6 @@
 #include "SPH_kernel_approx.h"
 
 //mDBC density aproximation for boundary particle
-void mDBC_compute_density
-(Particle_system &particles, Simulation_data simulation_data, real y_w)
-{
-
-	realvec r;
-	realvec gn;
-	realvec gnd;
-
-	#pragma omp parallel for schedule(static)
-	for(int p = 0; p < particles.np; p++)
-	{
-
-		if(particles.data.part_type[p] == wall)
-		{
-
-			r = particles.data.r[p];
-			gn.x = r.x;
-			gn.y = y_w + fabs(r.y - y_w);
-			//gnd = r - gn;
-			gnd = gn - r;
-
-			//particles.data.rho[p] = Kernel_density_approximation_mDBC(particles, simulation_data, gn);
-			particles.data.rho[p] = Kernel_density_approximation_MATRIX_mDBC(particles, simulation_data, gn, gnd);
-
-		} // if function - check part type
-
-	} // cycle over particles
-
-}
-
-
-//mDBC density aproximation for boundary particle
 void mDBC_compute_density_mdbcGeo
 (Particle_system &particles, Simulation_data simulation_data)
 {
@@ -57,20 +25,21 @@ void mDBC_compute_density_mdbcGeo
 			r = particles.data.r[p];
 			gn = particles.special.gnr[p];
 
-			//gnd = r - gn;
-			gnd = gn - r;
+			gnd = r - gn;
+			//gnd = gn - r;
 
 			/* DEBUG */
-			if(r.x == 0.44)
+			if(r.x == 0.64 && r.y == 0.28 || r.x == 0.44 && r.y == -0.04 )
 			{
-				//std::cout << "WALL PARTICLE POSITION: wr: [" << r.x << "," << r.y << "] gn: [" << gn.x << "," << gn.y << "] gnd: [" << gnd.x << "," << gnd.y << "]" << std::endl;
+				std::cout << "WALL PARTICLE POSITION: wr: [" << r.x << "," << r.y << "] gn: [" << gn.x << "," << gn.y << "] gnd: [" << gnd.x << "," << gnd.y << "]" << std::endl;
 			}
 
-			particles.data.rho[p] = Kernel_density_approximation_mDBC(particles, simulation_data, gn);
-			if(particles.data.rho[p] < particles.data_const.rho0)
-			particles.data.rho[p] = particles.data_const.rho0;
-			//particles.data.rho[p] = Kernel_density_approximation_MATRIX_mDBC(particles, simulation_data, gn, gnd);
-			//if(particles.data.rho[p] < 1000.){particles.data.rho[p];}
+			//particles.data.rho[p] = Kernel_density_approximation_mDBC(particles, simulation_data, gn);
+			//if(particles.data.rho[p] < particles.data_const.rho0)
+			//particles.data.rho[p] = particles.data_const.rho0;
+
+			particles.data.rho[p] = Kernel_density_approximation_MATRIX_mDBC(particles, simulation_data, gn, gnd);
+			if(particles.data.rho[p] < 1000.){particles.data.rho[p];}
 
 		} // if function - check part type
 

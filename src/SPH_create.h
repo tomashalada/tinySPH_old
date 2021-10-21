@@ -557,7 +557,7 @@ void Create_Wall_x_mdbc(Particle_system & particles, double x_0, double x_1, dou
 	/*if(modulo != 0){Delka hrany nekoresponduje se zadanym NP}*/
 
 	// number of virtual layers
-	int nvl = std::ceil(kh/dp) -1; //+1 tempfor asdasd
+	int nvl = std::ceil(kh/dp) -0; //+1 tempfor asdasd
 	//nvl = 1;
 
 	for(int l = 0; l < nvl; l++)
@@ -594,7 +594,7 @@ void Create_Wall_y_mdbc(Particle_system & particles, double x, double y_0, doubl
 	/*if(modulo != 0){Delka hrany nekoresponduje se zadanym NP}*/
 
 	// number of virtual layers
-	int nvl = std::ceil(kh/dp) -1;
+	int nvl = std::ceil(kh/dp) -0;
 	//nvl = 1;
 
 	for(int l = 0; l < nvl; l++)
@@ -627,7 +627,7 @@ void Create_corner_mdbc(Particle_system & particles, int orientationX, int orien
 	realvec gn;
 
 	// number of virtual layers
-	int nvl = std::ceil(kh/dp) -1; //+1 tempfor asdasd
+	int nvl = std::ceil(kh/dp) -0; //+1 tempfor asdasd
 
 	for(int l = 0; l < nvl; l++)
 	{

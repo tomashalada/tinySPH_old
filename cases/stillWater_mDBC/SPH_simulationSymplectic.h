@@ -102,7 +102,7 @@ struct SPH_simulation
 		std::cout << "SIMULATION -> RUN: Second part integraion. DONE. " << std::endl;
 
 		/*BT stuff*/
-		mDBC_compute_density_mdbcGeo(particles, simulation_data);
+		//mDBC_compute_density_mdbcGeo(particles, simulation_data);
 		Integrate_density_compute_pressure(particles, dt);
 		std::cout << "SIMULATION -> RUN: Compute density. DONE. " << std::endl;
 
@@ -183,7 +183,7 @@ struct SPH_simulation
 
 			//void GenerateInterpol
 			//(Particle_system &particles, Simulation_data simulation_data, std::string fname, int step, real x0, real y0, real xm, real ym)
-			GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.0, 0., 0.8, 0.7);
+			GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.0, 0., 0.6, 0.7);
 			std::cout << "[INTERPOLATION - DONE and SAVED.]" << std::endl;
 		}
 

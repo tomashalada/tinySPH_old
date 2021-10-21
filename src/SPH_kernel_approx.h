@@ -1069,18 +1069,18 @@ real Kernel_density_approximation_MATRIX
 	//if(det > 0.001)
 	if(det > 1000)
 	{
-		a11inv = (a22x*a33x-a23x*a32x)/det;
+
+		a11inv =  (a22x*a33x-a23x*a32x)/det;
 		a12inv = -(a12x*a33x-a13x*a32x)/det;
-		a13inv = (a12x*a23x-a13x*a22x)/det;
+		a13inv =  (a12x*a23x-a13x*a22x)/det;
 
 		a21inv = -(a21x*a33x-a23x*a31x)/det;
-		a22inv = (a11x*a33x-a13x*a31x)/det;
+		a22inv =  (a11x*a33x-a13x*a31x)/det;
 		a23inv = -(a11x*a23x-a13x*a21x)/det;
 
-		a31inv = (a21x*a32x-a22x*a31x)/det;
+		a31inv =  (a21x*a32x-a22x*a31x)/det;
 		a32inv = -(a11x*a32x-a12x*a31x)/det;
-		a33inv = (a11x*a22x-a12x*a21x)/det;
-
+		a33inv =  (a11x*a22x-a12x*a21x)/det;
 		/*
 		std::cout << "[KERNEL APROX.] Matrix | Inv(Matrix):" << std::endl;
 		std::cout << a11x << " " << a12x << " " << a13x << "  | " << a11inv << " " << a12inv << " " << a13inv << std::endl;
