@@ -14,7 +14,8 @@ void Compute_Forces
 	ncx = particles.pairs.ncx;
 	ncy = particles.pairs.ncy;
 
-	#pragma omp parallel for
+	//#pragma omp parallel for
+	#pragma omp parallel for schedule(dynamic, 3)
 	for(int c = 0; c < particles.cells.size(); c++)
 	{
 
@@ -79,7 +80,7 @@ void Compute_Forces
 
 				//Load data of neighbour particle
 				idx ni = particles.cells[cl].cp[n]; //actual particle index
-				//if(ai == ni){continue;}
+				if(ai == ni){continue;}
 
 				const realvec nr = particles.data.r[ni]; //position of ative particle
 				const realvec nv = particles.data.v[ni];; //position of ative particle
@@ -112,6 +113,7 @@ void Compute_Forces
 
 				p_temp = (ap + np)/(arho*nrho);
 				visco = Artificial_Viscosity(h, drs, drdv, 0.5*(arho + nrho), c0, particles.data_const.avisc);
+				//if(particles.data.part_type[ni] == wall){visco = 0.;}
 
 				ac_sum.x -= dW.x*(p_temp + visco)*m;
 				ac_sum.y -= dW.y*(p_temp + visco)*m;
@@ -121,6 +123,7 @@ void Compute_Forces
 
 				//diff_term = Density_Diffusion_term_FOURTAKAS(h, drs, dr.y, drdW, arho, nrho, rho0, c0, delta, m, gravity.y);
 				diff_term = Density_Diffusion_term_MOLTENI(h, drs, drdW, arho, nrho, c0, delta, m);
+				//if(particles.data.part_type[ni] == wall){diff_term = 0.;}
 
 				//drho_sum += dvdW*m/nrho;
 				drho_sum += dvdW*m;

@@ -71,11 +71,10 @@ struct SPH_simulation
 		std::cout << "SIMULATION -> RUN: Step: " << step << std::endl;
 
 		/* Integrate densiy and compute pressure, CHANGE */
-		Integrate_density_compute_pressure(particles, dt);
 		std::cout << "SIMULATION -> RUN: Integrate density. DONE. " << std::endl;
 
 		/* First part of integration */
-		if(step > 2 || step%40 != 0)
+		if(step > 1 || step%40 != 0)
 		{
 
 			Integrate_Verlet(particles, dt);
@@ -99,6 +98,7 @@ struct SPH_simulation
 		std::cout << "SIMULATION -> RUN: Particles to cells. DONE. " << std::endl;
 
 		mDBC_compute_density_mdbcGeo(particles, simulation_data);
+		Integrate_density_compute_pressure(particles, dt);
 		std::cout << "SIMULATION -> RUN: Compute density. DONE. " << std::endl;
 
 

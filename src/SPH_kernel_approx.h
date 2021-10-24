@@ -1251,7 +1251,7 @@ real Kernel_density_approximation_MATRIX_mDBC
 
 		//Position and velocity difference
 		dr = ar - nr;
-		drs = sqrt(pow(dr.x, 2) + pow(dr.y, 2));
+		drs = sqrt(dr.x*dr.x + dr.y*dr.y);
 		//drdv = dr.x*dv.x + dr.y*dv.y;
 
 		/* get kernel values
@@ -1289,34 +1289,18 @@ real Kernel_density_approximation_MATRIX_mDBC
 	//std::cout << "[ KERNEL GHOST NODE AROXIMATION ] Determinant: " << det << std::endl;
 	if(det > 0.001)
 	{
-		a11inv = (a22x*a33x-a23x*a32x)/det;
+
+		a11inv =  (a22x*a33x-a23x*a32x)/det;
 		a12inv = -(a12x*a33x-a13x*a32x)/det;
-		a13inv = (a12x*a23x-a13x*a22x)/det;
+		a13inv =  (a12x*a23x-a13x*a22x)/det;
 
 		a21inv = -(a21x*a33x-a23x*a31x)/det;
-		a22inv = (a11x*a33x-a13x*a31x)/det;
+		a22inv =  (a11x*a33x-a13x*a31x)/det;
 		a23inv = -(a11x*a23x-a13x*a21x)/det;
 
-		a31inv = (a21x*a32x-a22x*a31x)/det;
+		a31inv =  (a21x*a32x-a22x*a31x)/det;
 		a32inv = -(a11x*a32x-a12x*a31x)/det;
-		a33inv = (a11x*a22x-a12x*a21x)/det;
-
-		/*
-		std::cout << "[KERNEL APROX.] Matrix | Inv(Matrix):" << std::endl;
-		std::cout << a11x << " " << a12x << " " << a13x << "  | " << a11inv << " " << a12inv << " " << a13inv << std::endl;
-		std::cout << a21x << " " << a22x << " " << a23x << "  | " << a21inv << " " << a22inv << " " << a23inv << std::endl;
-		std::cout << a31x << " " << a32x << " " << a33x << "  | " << a31inv << " " << a32inv << " " << a33inv << std::endl;
-		std::cout << "[KERNEL APROX.] Matrix [" << a11x << ", " << a12x << ", " << a13x << "; " \
-																																										<< a21x << ", " << a22x << ", " << a23x << "; " \
-																																										<< a31x << ", " << a32x << ", " << a33x << "]" << std::endl;
-
-		std::cout << "[KERNEL APROX.] Inv(Matrix) [" << a11inv << ", " << a12inv << ", " << a13inv << "; " \
-																																															<< a21inv << ", " << a22inv << ", " << a23inv << "; " \
-																																															<< a31inv << ", " << a32inv << ", " << a33inv << "]" << std::endl;
-
-		*/
-
-
+		a33inv =  (a11x*a22x-a12x*a21x)/det;
 
 	//Compute ghost note velocity
 	dens_temp = rhoWsum*a11inv + drhodx*a12inv + drhody*a13inv;
@@ -1343,7 +1327,7 @@ real Kernel_density_approximation_MATRIX_mDBC
 	else
 	{
 
-		dens = 1000;
+		dens = 1000.;
 
 	//std::cout << " --> Case C: ACTIVE." << std::endl;
 

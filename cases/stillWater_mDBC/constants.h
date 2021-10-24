@@ -17,8 +17,11 @@
 	//real dt = 0.0001; //temp
 
 //	real dt = 0.00005; //temp
-//	real dt = 0.00005; //temp
-	real dt = 0.000075; //temp
+	//real dt = 0.0008; //temp
+	real dt = 0.0002; //temp
+
+	//real dt = 0.00004; //temp
+	//real dt = 0.000075; //temp
 	//real dt = 0.0001; //temp
 	real kap = 2.1;
 
@@ -28,7 +31,7 @@
 	unsigned int save_output_interval_interpolated = 1000;
 	unsigned int step = 0; //Time in steps
 	//unsigned int step_end = 20001; //Endtime in steps;
-	unsigned int step_end = 60001; //Endtime in steps;
+	unsigned int step_end = 20000; //Endtime in steps;
 
  std::string output_file_name = "results/particles_";
 	//std::string output_file_name_p_out = "p_out/particles_";
@@ -54,7 +57,7 @@
 //	double visco = 0.01;
 	double visco = 0.01;
 
-//	double hh = 1.1*sqrt(2*dp*dp);
+	//double hh = 1.1*sqrt(2*dp*dp);
 	double hh = 2.*dp;
 	//double hh = 0.02;
 	int nvl = std::ceil(kap*hh/dp);
