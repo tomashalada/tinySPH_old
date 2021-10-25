@@ -35,76 +35,76 @@ void BZ_Integrate_inlet
 				{
 					if(particles.data.part_type[p] != inletNumber){continue;}
 					//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
-					particles.data.r[p].x = particles.data.r[p].x + particles.data.v[p].x * dt;
-					//if(particles.data.r[p].x > x_b)
 					if(particles.data.r[p].x > x_b)
 					{
 						particles.data.part_type[p] = fluid;
 						particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x - b_len, particles.data.r[p].y}, v_inl, {0., 0.});
+						std::cout << "[BZ_Integrate_inlet] >> Particle on r: [" << particles.data.r[p].x << "," << particles.data.r[p].y << "] was transfered to fluid." << std::endl;
+						std::cout << "[BZ_Integrate_inlet] >> New particle created on r: [" << particles.data.r[p].x -b_len << "," << particles.data.r[p].y << "] was transfered to fluid, with type: " << inletNumber << std::endl;
 					}
 				}
 
 			}//orientation if
-			else if(orientation > 0)
-			{
+			// else if(orientation > 0)
+			// {
 
-				//#pragma omp parallel for schedule(static)
-				for(int p = 0; p < particles.np; p++)
-				{
-					if(particles.data.part_type[p] != inletNumber){continue;}
-					//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
-					particles.data.r[p].x = particles.data.r[p].x + particles.data.v[p].x * dt;
-					if(particles.data.r[p].x < x_b)
-					{
-						particles.data.part_type[p] = fluid;
-						particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x + b_len, particles.data.r[p].y}, v_inl, {0., 0.});
-					}
-				}
+			// 	 //#pragma omp parallel for schedule(static)
+			// 	 for(int p = 0; p < particles.np; p++)
+			// 	 {
+			// 	 	if(particles.data.part_type[p] != inletNumber){continue;}
+			// 	 	//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
+			// 	 	particles.data.r[p].x = particles.data.r[p].x + particles.data.v[p].x * dt;
+			// 	 	if(particles.data.r[p].x < x_b)
+			// 	 	{
+			// 	 		particles.data.part_type[p] = fluid;
+			// 	 		particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x + b_len, particles.data.r[p].y}, v_inl, {0., 0.});
+			// 	 	}
+			// 	 }
 
-			}//orientation if
+			// }//orientation if
 		}
-		else if(BUFFER.orientation.y != 0)
-		{
-			if(orientation < 0)
-			{
+		// else if(BUFFER.orientation.y != 0)
+		// {
+		// 	if(orientation < 0)
+		// 	{
 
-				//#pragma omp parallel for schedule(static)
-				for(int p = 0; p < particles.np; p++)
-				{
-					if(particles.data.part_type[p] != inletNumber){continue;}
-					//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
-					particles.data.r[p].y = particles.data.r[p].y + particles.data.v[p].y * dt;
-					//if(particles.data.r[p].x > x_b)
-					if(particles.data.r[p].y > x_b)
-					{
-						particles.data.part_type[p] = fluid;
-						particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x, particles.data.r[p].y - b_len}, v_inl, {0., 0.});
-					}
-				}
+		// 		//#pragma omp parallel for schedule(static)
+		// 		for(int p = 0; p < particles.np; p++)
+		// 		{
+		// 			if(particles.data.part_type[p] != inletNumber){continue;}
+		// 			//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
+		// 			particles.data.r[p].y = particles.data.r[p].y + particles.data.v[p].y * dt;
+		// 			//if(particles.data.r[p].x > x_b)
+		// 			if(particles.data.r[p].y > x_b)
+		// 			{
+		// 				particles.data.part_type[p] = fluid;
+		// 				particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x, particles.data.r[p].y - b_len}, v_inl, {0., 0.});
+		// 			}
+		// 		}
 
-			}//orientation if
-			else if(orientation > 0)
-			{
+		// 	}//orientation if
+		// 	else if(orientation > 0)
+		// 	{
 
-				//#pragma omp parallel for schedule(static)
-				for(int p = 0; p < particles.np; p++)
-				{
-					if(particles.data.part_type[p] != inletNumber){continue;}
-					//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
-					particles.data.r[p].y = particles.data.r[p].y + particles.data.v[p].y * dt;
-					if(particles.data.r[p].y < x_b)
-					{
-						particles.data.part_type[p] = fluid;
-						particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x, particles.data.r[p].y + b_len}, v_inl, {0., 0.});
-					}
-				}
+		// 		//#pragma omp parallel for schedule(static)
+		// 		for(int p = 0; p < particles.np; p++)
+		// 		{
+		// 			if(particles.data.part_type[p] != inletNumber){continue;}
+		// 			//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
+		// 			particles.data.r[p].y = particles.data.r[p].y + particles.data.v[p].y * dt;
+		// 			if(particles.data.r[p].y < x_b)
+		// 			{
+		// 				particles.data.part_type[p] = fluid;
+		// 				particles.Add_particle(inletNumber, 0, 1000, {particles.data.r[p].x, particles.data.r[p].y + b_len}, v_inl, {0., 0.});
+		// 			}
+		// 		}
 
-			}//orientation if
-		}
-		else
-		{
-			std::cout << "INVALID INLET ORIENTATION." << std::endl;
-		} //throw error
+		// 	}//orientation if
+		// }
+		// else
+		// {
+		// 	std::cout << "INVALID INLET ORIENTATION." << std::endl;
+		// } //throw error
 
 } // function
 
@@ -155,6 +155,7 @@ void BZ_Integrate_outlet
 				{
 					particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt; //update outlet p. position
 					if(particles.data.r[p].x > x_b + b_len || particles.data.r[p].y < dp/2) // change fluid particle to buffer particle
+					//if(particles.data.r[p].x > x_b + b_len) // change fluid particle to buffer particle
 					{
 						particles.Remove_particle(p); //remove particle outgoing from buffer
 					}

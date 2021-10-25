@@ -63,7 +63,7 @@ real Pressure_to_density2
 }
 
 void Density_to_pressure
-(Particle_system &particles, double dt)
+(Particle_system &particles)
 {
 
 		#pragma omp parallel for schedule(static)

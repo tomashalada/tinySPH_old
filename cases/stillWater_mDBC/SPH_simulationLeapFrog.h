@@ -4,32 +4,25 @@
 #include "SPH_data_to_vtk.h"
 #include "SPH_grid_to_vtk.h"
 #include "SPH_dataInterpolation.h"
-
-#include "SPH_density.h"
 #include "SPH_pressure.h"
-#include "SPH_acceleration.h"
-
-//#include "SPH_integration.h"
+#include "SPH_interaction.h"
 #include "SPH_integration.h"
-#include "SPH_moving_boundary.h"
-
 #include "SPH_output_info.h"
 #include "draw_geometry.h"
-
 #include "SPH_mDBC.h"
-
-#include "SPH_inlet_outlet.h" //inlet, outlet, functions
-#include "SPH_inlet_outlet_data.h" //inlet, outlet zones structures
-
-#include "SPH_shifting.h"
 #include "SPH_btdebug.h"
+
+//#include "SPH_moving_boundary.h"
+//#include "SPH_inlet_outlet.h" //inlet, outlet, functions
+//#include "SPH_inlet_outlet_data.h" //inlet, outlet zones structures
+//#include "SPH_shifting.h"
 
 struct SPH_simulation
 {
 
 	#include "constants.h"
 
-	/*** Simulation objects and shared structures ***/
+	// Simulation objects and shared structures
 	Particle_system particles;
 	Simulation_data simulation_data;
 
@@ -37,21 +30,17 @@ struct SPH_simulation
 	()
 	{
 
-		/* Draw case */
+		// Draw case
 		#include "geometry.h"
 
 		// Create grid for co-interacting pairs
 		Divide_To_Cells(particles, simulation_data);
-
 		// Initial contidion to VTK
 		write_to_ASCII_VTK(particles, fileName_initCond);
-
-		/* Test */
+		// Find neihgbours test
 		Particle_To_Cell(particles, simulation_data);
-
 		// Grid to VTK
-		write_mesh_to_ASCII_VTK(particles, simulation_data);
-
+		write_mesh_to_ASCII_VTK(particles, simulation_data, fileName_grid);
 		// Simulation info
 		Output_file(particles.data_const, simulation_data, fileName_info);
 
@@ -62,28 +51,17 @@ struct SPH_simulation
 	()
 	{
 
-		/* Main time loop. */
+		// Main time loop
 		while(step < step_end)
 		{
-
 		step++;
 		std::cout << "SIMULATION -> RUN: Step: " << step << std::endl;
 
 		/* First part of integration */
-		if(step > 1)
-		{
+		if(step>1){Integrate_LeapFrog_partOne_withDensity(particles, dt);}
+		std::cout << "SIMULATION -> RUN: First part of integraion. DONE. " << std::endl;
 
-			Integrate_LeapFrog_partOne_withDensity(particles, dt);
-
-		}
-		std::cout << "SIMULATION -> RUN: First part integraion. DONE. " << std::endl;
-
-		/* Moving boundary, TEMP */
-		// Moving_boundary(particles, dp);
-		// Moving_boundary(particlesHR, dpHR);
-		// std::cout << "SIMULATION -> RUN: Moving boundary. DONE. " << std::endl;
-
-		/* Clear cells, TEMP */
+		/* Clear cells */
 		Clear_cells(particles);
 		std::cout << "SIMULATION -> RUN: Clear cells. DONE. " << std::endl;
 
@@ -91,63 +69,39 @@ struct SPH_simulation
 		Particle_To_Cell(particles, simulation_data);
 		std::cout << "SIMULATION -> RUN: Particles to cells. DONE. " << std::endl;
 
-		/* Compute density change */
-		Compute_Density(particles);
-		//mDBC_compute_density(particles, simulation_data, dp/2);
+		/* Apply mDBC, compute pressure */
 		mDBC_compute_density_mdbcGeo(particles, simulation_data);
-		std::cout << "SIMULATION -> RUN: Compute density. DONE. " << std::endl;
+		std::cout << "SIMULATION -> RUN: Apply mDBC, compute pressure. DONE. " << std::endl;
 
-		/* Integrate densiy and compute pressure, CHANGE */
-		Integrate_density_compute_pressure(particles, dt);
+		/* Integrate densiy and compute pressure */
+		Density_to_pressure(particles);
 		std::cout << "SIMULATION -> RUN: Integrate density. DONE. " << std::endl;
 
-		/* Compute acceleration */
-		Compute_Acceleration(particles);
-		std::cout << "SIMULATION -> RUN: Compute acceleration. DONE. " << std::endl;
-
-		//dt = ComputeDT(particles, dt);
-		//std::cout << "SIMULATION dt: " << dt <<std::endl;
+		/* Compute forces */
+		Compute_Forces(particles);
+		std::cout << "SIMULATION -> RUN: Compute forces. DONE. " << std::endl;
 
 		/* Second part of integration */
 		Integrate_LeapFrog_partTwo_withDensity(particles, dt, step);
 		std::cout << "SIMULATION -> RUN: Second part integraion. DONE. " << std::endl;
 
-		/*BT stuff*/
-
+		/* Remove partiocles out of domain */
 	 RemoveParticlesOutOfDomain(particles, simulation_data);
 		std::cout << "SIMULATION -> RUN: Remove particles out of domain. DONE. " << std::endl;
 
 		#pragma omp barrier
 
-		/*Particle shiftig */
-		//if(step%5 == 0)
-		//{
-
-		//	//void ShiftParticles
-		//	//(Particle_system &particles, Simulation_data simulation_data, real dt)
-		//	ShiftParticles(particles, simulation_data, dt);
-
-		//}
-
-		std::cout << "SIMULATION -> RUN: Particles shifting. DONE. " << std::endl;
-
 		/* Output to vtk. */
 		if(step%save_output_interval == 0)
 		{
 
-			std::string output_file_name;
-
+			std::string output_file_name, output_file_namefo, output_file_name_p_out;
 			output_file_name = fileName_resultsAll + std::to_string(step) + ".vtk";
-
 			output_file_namefo = fileName_resultsFluidOnly + std::to_string(step) + ".vtk";
-
-			//output_file_name_p_out += std::to_string(step) + ".vtk";
+			output_file_name_p_out = fileName_particlesOut + std::to_string(step) + ".vtk";
 
 			write_to_ASCII_VTK(particles, output_file_name);
-			//write_to_ASCII_VTK(particlesHR, output_file_nameHR);
-
 			//write_to_ASCII_VTK_noIOzones(particles, output_file_namefo);
-
  		//excluded_particle_write_to_ASCII_VTK(particles, output_file_name_p_out);
 
 		}
@@ -158,12 +112,11 @@ struct SPH_simulation
 		std::cout << "np_out: " << particles.np_out << std::endl;
 
 
-		//OUTPUT INTERPOLATE DATA
+		/* Interpolate and save interpolated data. */
 		if(step%save_output_interval_interpolated == 0)
 		{
 
 			std::string output_file_nameInterpol;
-
 			output_file_nameInterpol = fileName_resultsInterpol + std::to_string(step) + ".vtk";
 
 			//void GenerateInterpol
@@ -196,7 +149,7 @@ struct SPH_simulation
 	/* Init */
 	SPH_simulation
 	()
-	: particles(hh, kap, cs, 1000., visco, dp),
+	: particles(hh, kap, cs, 1000., visco, delta, dp),
 			simulation_data(x_0, x_1, y_0, y_1)
 	{
 

@@ -4,7 +4,7 @@
 #include "SPH_particle_system.h"
 
 void write_mesh_to_ASCII_VTK
-(Particle_system particles, Simulation_data sd)
+(Particle_system particles, Simulation_data sd, std::string filename)
 {
 
 	std::ofstream file;
@@ -22,7 +22,7 @@ void write_mesh_to_ASCII_VTK
 	const int nFields = 2;
 	int nCells = (ncx - 1 ) * (ncy - 1);
 
-	file.open("mesh.vtk");
+	file.open(filename);
 
 	//hlavička souboru
 	file << "# vtk DataFile Version 3.0" << std::endl << "vtk output" << std::endl << "ASCII" << std::endl << "DATASET STRUCTURED_GRID" << std::endl

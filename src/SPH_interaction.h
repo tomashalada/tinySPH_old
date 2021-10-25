@@ -35,9 +35,6 @@ void Compute_Forces
 
 		ac = {zz, zp, pp, pz, pm, zm, mm, mz, mp};
 
-		/* Debug */
-		//std::cout << "ACCELERATION -> zz: " << zz << " zp: " << zp << " pp: " << pp << " pz: " << pz << " pm: " << pm << " zm: " << zm << " mm: " << mm << " mz:" << mz << " mp: " << mp << std::endl;
-
 		//Temp. data, temp. variable
 		realvec ac_sum = {0.,0.}; //acceleration sum
 
