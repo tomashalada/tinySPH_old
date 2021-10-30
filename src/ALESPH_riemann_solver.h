@@ -95,6 +95,25 @@ real velRiemannLinearized
 
 }
 
+real velRiemannLinearizedWithLimiter
+(real rhoL, real rhoR, real vL, real vR, real rhoAvg, real c)
+{
+
+	real v;
+
+	real p;
+	real eta = 3.;
+	real beta = MIN(eta*MAX(rhoL-rhoR, 0), c);
+	//rho = 0.5*(rhoL + rhoR) + 0.5*beta*(vL - vR)*rhoAvg/(c*c);
+
+	//rho = 0.5*(rhoL + rhoR);// - 0.5*(vR - vL)*rhoAvg/c;
+	v = 0.5*(vR + vL) - 0.5*(rhoR - rhoL)*beta/rhoAvg;
+	//v = 0.5*(vR + vL);// - 0.5*(rhoR - rhoL)*c/rhoAvg;
+
+	return v;
+
+}
+
 real velRiemannLinearizedwithPressure
 (real rhoL, real rhoR, real vL, real vR, real pL, real pR, real rhoAvg, real c)
 {
@@ -124,6 +143,15 @@ real cs
 
 }
 
+real limiter_r
+(real aC, real aD, realvec gaC, realvec rCD)
+{
+	real r;
+	r = 2*(gaC.x*rCD.x + gaC.y*rCD.y)/(aD-aC) - 1.;
+
+	return r;
+}
+
 real minmod
 (real r)
 {
@@ -133,6 +161,20 @@ real minmod
 	return fi;
 
 }
+
+real minmod_r
+(real aC, real aD, realvec gaC, realvec rCD)
+{
+
+	real fi;
+
+	const real r = 2*(gaC.x*rCD.x + gaC.y*rCD.y)/(aD-aC) - 1.;
+
+	fi = MAX(0, MIN(1,r));
+	return fi;
+
+}
+
 
 //MUSCL: Update L and R state
 real MUSCLleft
@@ -161,7 +203,7 @@ real MUSCLleft
 (real A, realvec gradA, realvec dr, real alpha)
 {
 
-	real AL = A - alpha*0.5*(gradA.x * dr.x + gradA.y * dr.y);
+	real AL = A + alpha*0.5*(gradA.x * dr.x + gradA.y * dr.y);
 
 	return AL;
 
@@ -171,10 +213,49 @@ real MUSCLright
 (real A, realvec gradA, realvec dr, real alpha)
 {
 
-	real AR = A + alpha*0.5*(gradA.x * dr.x + gradA.y * dr.y);
+	real AR = A - alpha*0.5*(gradA.x * dr.x + gradA.y * dr.y);
 
 	return AR;
 
 }
 
+//=//=//=//=//=//=//=//=//=//=//=//=//=//=//=//
+real densVFRoeTurkel
+(real rhoL, real rhoR, real vL, real vR, real rhoAvg, real c, real b)
+{
 
+	real rho;
+
+	const real vv = 0.5*(vL+vR);
+	const real d = vv*vv*(1+b*b)*(1+b*b)-4*b*b*(vv*vv-c*c);
+	const real dsq = pow(d,0.5);
+
+	const real t0 = 0.5*(rhoL+rhoR);
+	const real t1 = -0.5*(vv*(b*b-1)*((rhoR-rhoL)/dsq + vv*(1-b*b)/(2*c*c*dsq*rhoAvg)*(vR-vR)));
+	const real t2 = -0.5*dsq/(2*c*c*rhoAvg)*(vR-vL);
+
+	rho = t0 + t1 + t2;
+
+	return rho;
+
+}
+
+real vVFRoeTurkel
+(real rhoL, real rhoR, real vL, real vR, real rhoAvg, real c, real b)
+{
+
+	real v;
+
+	const real vv = 0.5*(vL+vR);
+	const real d = vv*vv*(1+b*b)*(1+b*b)-4*b*b*(vv*vv-c*c);
+	const real dsq = pow(d,0.5);
+
+	const real t0 = 0.5*(vR+vL);
+
+	const real t1 = c*c*((vR-vL)/dsq + -0.5*vv*(1-b*b)/(2*c*c*dsq*rhoAvg)*(vR-vR));
+
+	v = t0 + t1;
+
+	return v;
+
+}

@@ -123,7 +123,7 @@ void Integrate_Verlet
  	for(int p = 0; p < particles.np; p++)
  	{
 
- 		if(particles.data.part_type[p] == fluid)
+ 		//if(particles.data.part_type[p] == fluid)
  		{
 
  			particles.data.v[p] = particles.data.v_oo[p] + particles.data.a[p] * dt * 2 ;
@@ -151,7 +151,7 @@ void Integrate_Verlet
  	for(int p = 0; p < particles.np; p++)
  	{
 
- 		if(particles.data.part_type[p] == fluid)
+ 		//if(particles.data.part_type[p] == fluid)
  		{
 
  			particles.data.v[p] = particles.data.v[p] + particles.data.a[p] * dt ;

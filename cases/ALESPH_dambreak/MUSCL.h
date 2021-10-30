@@ -12,7 +12,7 @@
 //#include "SPH_acceleration_bt.h"
 
 #include "RALESPH_integration.h"
-#include "ALESPH_integration.h"
+//#include "ALESPH_integration.h"
 #include "SPH_moving_boundary.h"
 
 #include "SPH_output_info.h"
@@ -21,9 +21,9 @@
 
 #include "SPH_mDBC.h"
 #include "ALESPH_boundary_pressure.h"
-#include "ALESPH_kernel_gradient.h"
+#include "_testMUSCL_gradientApprox.h"
 
-#include "RALESPH_interaction.h"
+#include "_testMUSCL_interaction.h"
 
 #include "SPH_inlet_outlet.h" //inlet, outlet, functions
 #include "SPH_inlet_outlet_data.h" //inlet, outlet zones structures
@@ -85,7 +85,7 @@ struct SPH_simulation
 		if(step > 1)
 		{
 
-			Integrate_LeapFrog_partOne_ALESPH(particles, dt);
+			Integrate_LeapFrog_partOne(particles, dt);
 
 		}
 		std::cout << "SIMULATION -> RUN: First part integraion. DONE. " << std::endl;
@@ -99,25 +99,26 @@ struct SPH_simulation
 		std::cout << "SIMULATION -> RUN: Particles to cells. DONE. " << std::endl;
 
 		/* Compute density change */
-		Compute_Density(particles);
+		//Compute_Density(particles);
 		//Kernel_gradient_approx(particles);
 		//mDBC_compute_density_bt(particles, simulation_data, dp/2);
 		//Wall_pressure(particles, simulation_data);
 		std::cout << "SIMULATION -> RUN: Compute density. DONE. " << std::endl;
 
 		/* Integrate densiy and compute pressure, CHANGE */
-		Integrate_density_compute_pressure(particles, dt);
-		//Density_to_pressure(particles);
+		//Integrate_density_compute_pressure(particles, dt);
+		Density_to_pressure(particles);
 		std::cout << "SIMULATION -> RUN: Integrate density. DONE. " << std::endl;
 
 		/* Compute acceleration */
-		//Compute_Forces(particles);
-		Compute_Acceleration_BT(particles);
+		Kernel_gradient_approx(particles);
+		Compute_Forces(particles, dt);
+		//Compute_Acceleration_BT(particles);
 		std::cout << "SIMULATION -> RUN: Compute acceleration. DONE. " << std::endl;
 
 		/* Second part of integration */
 		//Integrate_ALESPH(particles, dt, step);
-		Integrate_LeapFrog_partTwo_ALESPH(particles, dt, step);
+		Integrate_LeapFrog_partTwo(particles, dt, step);
 		std::cout << "SIMULATION -> RUN: Second part integraion. DONE. " << std::endl;
 
 		/*BT stuff*/

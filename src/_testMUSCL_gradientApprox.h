@@ -45,9 +45,14 @@ void Kernel_gradient_approx
 		real p_temp = 0;
 		real visco = 0;
 		real gamma = 0;
-		realvec gradrho_temp = {0., 0.};
-		realvec gradvx_temp = {0., 0.};
-		realvec gradvy_temp = {0., 0.};
+
+		realvec gradrhoF_sum = {0., 0.};
+		realvec gradvxF_sum = {0., 0.};
+		realvec gradvyF_sum = {0., 0.};
+
+		realvec gradrhoB_sum = {0., 0.};
+		realvec gradvxB_sum = {0., 0.};
+		realvec gradvyB_sum = {0., 0.};
 
 
 		real h = particles.data_const.h;
@@ -73,10 +78,11 @@ void Kernel_gradient_approx
 			real aomega; //ALE
 
 			//Load data of actual particle
-			ar = particles.data.r[particles.cells[zz].cp[i]];
-			av = particles.data.v[particles.cells[zz].cp[i]];
-			arho = particles.data.rho[particles.cells[zz].cp[i]];
-			aomega = particles.special.omega[particles.cells[zz].cp[i]];
+			idx ai = particles.cells[zz].cp[i];
+			ar = particles.data.r[ai];
+			av = particles.data.v[ai];
+			arho = particles.data.rho[ai];
+			aomega = particles.special.omega[ai];
 
 
 			for(int &cl: ac)
@@ -97,10 +103,11 @@ void Kernel_gradient_approx
 				real nomega; //ALE
 
 				//Load data of neighbour particle
-				nr = particles.data.r[particles.cells[cl].cp[n]];
-				nv = particles.data.v[particles.cells[cl].cp[n]];
-				nrho = particles.data.rho[particles.cells[cl].cp[n]];
-				nomega = particles.special.omega[particles.cells[cl].cp[n]];
+				idx ni = particles.cells[cl].cp[n];
+				nr = particles.data.r[ni];
+				nv = particles.data.v[ni];
+				nrho = particles.data.rho[ni];
+				nomega = particles.special.omega[ni];
 
 				real drs; //dr size
 				realvec dW; //smoothing function gradient
@@ -125,27 +132,49 @@ void Kernel_gradient_approx
 					realvec nb = {0., 0.};
 					nb = particles.special.n[particles.cells[cl].cp[n]]*(-1);
 
-					gradrho_temp.x += (nrho - arho)*nb.x*W*dp;
-					gradrho_temp.y += (nrho - arho)*nb.y*W*dp;
+					if(nr.x>ar.x)
+					{
+					gradrhoF_sum.x += (nrho - arho)*nb.x*W*dp;
+					gradrhoF_sum.y += (nrho - arho)*nb.y*W*dp;
+					gradvxF_sum.x += (nv.x - av.x)*nb.x*W*dp;
+					gradvxF_sum.y += (nv.x - av.x)*nb.y*W*dp;
+					gradvyF_sum.x += (nv.y - av.y)*nb.x*W*dp;
+					gradvyF_sum.y += (nv.y - av.y)*nb.y*W*dp;
+					}
 
-					gradvx_temp.x += (nv.x - av.x)*nb.x*W*dp;
-					gradvx_temp.y += (nv.x - av.x)*nb.y*W*dp;
-
-					gradvy_temp.x += (nv.y - av.y)*nb.x*W*dp;
-					gradvy_temp.y += (nv.y - av.y)*nb.y*W*dp;
+					if(nr.x<ar.x)
+					{
+					gradrhoB_sum.x += (nrho - arho)*nb.x*W*dp;
+					gradrhoB_sum.y += (nrho - arho)*nb.y*W*dp;
+					gradvxB_sum.x += (nv.x - av.x)*nb.x*W*dp;
+					gradvxB_sum.y += (nv.x - av.x)*nb.y*W*dp;
+					gradvyB_sum.x += (nv.y - av.y)*nb.x*W*dp;
+					gradvyB_sum.y += (nv.y - av.y)*nb.y*W*dp;
+					}
 
 				}
 				else
 				{
 
-					gradrho_temp.x += (nrho - arho)*nomega*dW.x;
-					gradrho_temp.y += (nrho - arho)*nomega*dW.y;
+					if(nr.x>ar.x)
+					{
+					gradrhoF_sum.x += (nrho - arho)*nomega*dW.x;
+					gradrhoF_sum.y += (nrho - arho)*nomega*dW.y;
+					gradvxF_sum.x += (nv.x - av.x)*nomega*dW.x;
+					gradvxF_sum.y += (nv.x - av.x)*nomega*dW.y;
+					gradvyF_sum.x += (nv.y - av.y)*nomega*dW.x;
+					gradvyF_sum.y += (nv.y - av.y)*nomega*dW.y;
+					}
 
-					gradvx_temp.x += (nv.x - av.x)*nomega*dW.x;
-					gradvx_temp.y += (nv.x - av.x)*nomega*dW.y;
-
-					gradvy_temp.x += (nv.y - av.y)*nomega*dW.x;
-					gradvy_temp.y += (nv.y - av.y)*nomega*dW.y;
+					if(nr.x<ar.x)
+					{
+					gradrhoB_sum.x += (nrho - arho)*nomega*dW.x;
+					gradrhoB_sum.y += (nrho - arho)*nomega*dW.y;
+					gradvxB_sum.x += (nv.x - av.x)*nomega*dW.x;
+					gradvxB_sum.y += (nv.x - av.x)*nomega*dW.y;
+					gradvyB_sum.x += (nv.y - av.y)*nomega*dW.x;
+					gradvyB_sum.y += (nv.y - av.y)*nomega*dW.y;
+					}
 
 				}
 
@@ -159,27 +188,39 @@ void Kernel_gradient_approx
 			if(gamma == 0)
 			{
 
-				particles.special.gradrho[particles.cells[zz].cp[i]] = {0., 0.};
-				particles.special.gradvx[particles.cells[zz].cp[i]] = {0., 0.};
-				particles.special.gradvy[particles.cells[zz].cp[i]] = {0., 0.};
+				particles.special.gradrhoF[particles.cells[zz].cp[i]] = {0., 0.};
+				particles.special.gradvxF[particles.cells[zz].cp[i]] = {0., 0.};
+				particles.special.gradvyF[particles.cells[zz].cp[i]] = {0., 0.};
+
+				particles.special.gradrhoB[particles.cells[zz].cp[i]] = {0., 0.};
+				particles.special.gradvxB[particles.cells[zz].cp[i]] = {0., 0.};
+				particles.special.gradvyB[particles.cells[zz].cp[i]] = {0., 0.};
 
 			}
 			else
 			{
 
-				//particles.special.gradrho[particles.cells[zz].cp[i]] = gradrho_temp*aomega;
+				//particles.special.gradrho[particles.cells[zz].cp[i]] = gradvx_temp*aomega;
 				//particles.special.gradvx[particles.cells[zz].cp[i]] = gradvx_temp*aomega;
-				//particles.special.gradvy[particles.cells[zz].cp[i]] = gradvy_temp*aomega;
-				particles.special.gradrho[particles.cells[zz].cp[i]] = gradrho_temp*2.;
-				particles.special.gradvx[particles.cells[zz].cp[i]] = gradvx_temp*2.;
-				particles.special.gradvy[particles.cells[zz].cp[i]] = gradvy_temp*2.;
+				//particles.special.gradvy[particles.cells[zz].cp[i]] = gradvx_temp*aomega;
+				particles.special.gradrhoF[particles.cells[zz].cp[i]] = gradrhoF_sum*2.;
+				particles.special.gradvxF[particles.cells[zz].cp[i]] = gradvxF_sum*2.;
+				particles.special.gradvyF[particles.cells[zz].cp[i]] = gradvyF_sum*2.;
+
+				particles.special.gradrhoB[particles.cells[zz].cp[i]] = gradrhoB_sum*2.;
+				particles.special.gradvxB[particles.cells[zz].cp[i]] = gradvxB_sum*2.;
+				particles.special.gradvyB[particles.cells[zz].cp[i]] = gradvyB_sum*2.;
 
 			}
 
 			gamma = 0;
-			gradrho_temp = {0., 0.};
-			gradvx_temp = {0., 0.};
-			gradvy_temp = {0., 0.};
+			gradrhoF_sum = {0., 0.};
+			gradvxF_sum = {0., 0.};
+			gradvyF_sum = {0., 0.};
+
+			gradrhoB_sum = {0., 0.};
+			gradvxB_sum = {0., 0.};
+			gradvyB_sum = {0., 0.};
 
 		} // cycle over particles in active cell
 

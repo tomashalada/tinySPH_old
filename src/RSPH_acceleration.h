@@ -168,8 +168,8 @@ void RSPHCompute_Acceleration
 						real pR = ap + arho*(-1)*(particles.data_const.graviy.y*rwf.y);
 
 						real vss = velRiemannLinearizedwithPressure(arho, nrho, vL, vR, ap, np, 0.5*(arho + nrho), c0);
-						real ps = pRiemannLinearized(arho, nrho, vL, vR, ap, pR, 0.5*(arho + nrho), c0);
-						//real ps = pRiemannLinearizedWithLimiter(arho, nrho, vL, vR, ap, np, 0.5*(arho + nrho), c0);
+						//real ps = pRiemannLinearized(arho, nrho, vL, vR, ap, pR, 0.5*(arho + nrho), c0);
+						real ps = pRiemannLinearizedWithLimiter(arho, nrho, vL, vR, ap, np, 0.5*(arho + nrho), c0);
 						realvec vs = drn * vss + ((av + nv)*0.5 - drn*(vL + vR)*0.5);
 
 						realvec dvs = av - vs;

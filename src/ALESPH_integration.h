@@ -18,7 +18,7 @@ void Integrate_LeapFrog_partOne_ALESPH
 		{
 
 			//particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt * 0.5;
-			particles.special.omegav[p] = particles.special.omegav[p] + particles.special.omegaa[p] * dt * 0.5;
+			particles.special.omegav[p] = particles.special.omegav[p] + particles.special.domegav[p] * dt * 0.5;
 			particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
 
 			//std::cout << "[INTEGRATE_PART_ONE] >> V: [" << particles.data.v[p].x << "," << particles.data.v[p].y  << "] OmegaV: [" << particles.special.omegav[p].x << "," << particles.special.omegav[p].y << "] Omega: " << particles.special.omega[p] << " dOmegaA: [" << particles.special.omegaa[p].x << "," << particles.special.omegaa[p].x << "] dOmega: " << particles.special.domega[p] << std::endl;
@@ -46,7 +46,7 @@ void Integrate_LeapFrog_partTwo_ALESPH
 
 
 				//particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt * 0.5;
-				particles.special.omegav[p] = particles.special.omegav[p] + particles.special.omegaa[p] * dt * 0.5;
+				particles.special.omegav[p] = particles.special.omegav[p] + particles.special.domegav[p] * dt * 0.5;
 				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
 
 				//particles.data.v[p] = particles.data.v[p] + particles.data.a[p] * dt * 0.5;
@@ -68,7 +68,7 @@ void Integrate_LeapFrog_partTwo_ALESPH
 			{
 
 				//particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt;
-				particles.special.omegav[p] = particles.special.omegav[p] + particles.special.omegaa[p] * dt;
+				particles.special.omegav[p] = particles.special.omegav[p] + particles.special.domegav[p] * dt;
 				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p] * particles.special.omega[p]);
 
 			//	particles.data.v[p] = particles.data.v[p] + particles.data.a[p] * dt;
@@ -148,7 +148,7 @@ void Integrate_ALESPH
 
 				particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt;
 				particles.special.omegarho[p] = particles.special.omegarho[p] + particles.special.domegarho[p] * dt;
-				particles.special.omegav[p] = particles.special.omegav[p] + particles.special.omegaa[p] * dt;
+				particles.special.omegav[p] = particles.special.omegav[p] + particles.special.domegav[p] * dt;
 
 				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p] * particles.special.omega[p]);
 				particles.data.rho[p] = particles.special.omegarho[p] / (particles.special.omega[p]);

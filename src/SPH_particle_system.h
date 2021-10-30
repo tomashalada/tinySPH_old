@@ -64,19 +64,41 @@ struct Particle_system
 		data.v.push_back(_v);
 		data.a.push_back(_a);
 
-
 		//ALESPH variables
 		special.omega.push_back(data_const.dp * data_const.dp);
-		special.domega.push_back(0.);
-		special.domegarho.push_back(0.);
-		special.omegaa.push_back({0., 0.});
 		special.omegav.push_back(_v*(data_const.dp * data_const.dp));
 		special.omegarho.push_back(_rho*(data_const.dp * data_const.dp));
+
+		special.omega_o.push_back(data_const.dp * data_const.dp);
+		special.omegav_o.push_back(_v*(data_const.dp * data_const.dp));
+		special.omegarho_o.push_back(_rho*(data_const.dp * data_const.dp));
+		special.omega_oo.push_back(data_const.dp * data_const.dp);
+		special.omegav_oo.push_back(_v*(data_const.dp * data_const.dp));
+		special.omegarho_oo.push_back(_rho*(data_const.dp * data_const.dp));
+
+		special.domega.push_back(0.);
+		special.domegarho.push_back(0.);
+		special.domegav.push_back({0., 0.});
 
 		//ALESPH MUSCL variables
 		special.gradrho.push_back({0., 0.});
 		special.gradvx.push_back({0., 0.});
 		special.gradvy.push_back({0., 0.});
+
+		//ALESPHexperiment
+		special.gradrhoF.push_back({0., 0.});
+		special.gradvxF.push_back({0., 0.});
+		special.gradvyF.push_back({0., 0.});
+		special.gradrhoB.push_back({0., 0.});
+		special.gradvxB.push_back({0., 0.});
+		special.gradvyB.push_back({0., 0.});
+
+		//TEST
+		data.r_o.push_back(_r);
+		data.rho_o.push_back(_rho);
+		data.rho_oo.push_back(_rho);
+		data.v_o.push_back(_v);
+		data.v_oo.push_back(_v);
 
 	}
 
@@ -108,6 +130,12 @@ struct Particle_system
 		data.v.erase(data.v.begin() + p);
 		data.a.erase(data.a.begin() + p);
 
+		//TEST
+		data.r_o.erase(data.r_o.begin() + p);
+		data.v_o.erase(data.v_o.begin() + p);
+		data.v_oo.erase(data.v_oo.begin() + p);
+		data.rho_o.erase(data.rho_o.begin() + p);
+		data.rho_oo.erase(data.rho_oo.begin() + p);
 
 	}
 

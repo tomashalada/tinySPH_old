@@ -265,7 +265,8 @@ void Compute_Density_BT
 			else
 			{
 
-				particles.data.drho[particles.cells[zz].cp[i]] = 2.0*drho_temp/gamma; //normalize
+				//particles.data.drho[particles.cells[zz].cp[i]] = 2.0*drho_temp/gamma; //normalize
+				particles.data.drho[particles.cells[zz].cp[i]] = 2.0*drho_temp; //normalize
 
 			}
 			drho_temp = 0;

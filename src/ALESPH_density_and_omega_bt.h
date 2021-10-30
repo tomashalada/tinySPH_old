@@ -186,7 +186,7 @@ void Compute_Density
 				//real avgc = cs(arho, rho0, c0) + cs(nrho, rho0, c0);
 				real avgc = c0;
 				rhos = densRiemannLinearized(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
-				//rhos = densRiemannLinearizedWithLimiter(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
+				rhos = densRiemannLinearizedWithLimiter(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
 				vss = velRiemannLinearized(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
 
 				// //Riemann problem

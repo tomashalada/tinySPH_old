@@ -1,64 +1,53 @@
 #include "SPH_defs.h"
 
-	/*** Simulation parameters & settings ***/
+// CASE: StillWater_mDBC
+// NOTE:
 
-	double x_0 = 0.; // temp
-	double x_1 = 2.; // temp
-	double y_0 = 0.; // temp
-	double y_1 = 1.; // temp
+// ========== DOMAIN LIMITS ========== //
+const real x_0 = 0.; //min point x
+const real x_1 = 2.; //max point x
+const real y_0 = 0.; //min point y
+const real y_1 = 1.; //max point y
 
-	real dp = 0.005; //temp
-	//real dpHR = 0.005; //temp
+// ========== SPH BASIC CONSTANTS ========== //
+const real dp = 0.0075; //initial particle distance
+const real kap = 2.1; //kernel domain constant (2 for Wendland kernel!)
 
-	// real dp = 0.005; //temp
-	// real dpHR = 0.0025; //temp
-	// //real dpHR = 0.005; //temp
+const real hh = 1.0*sqrt(2*dp*dp); //smoothing length
+//const real hh = 2.*dp; //smoothing length
 
-	real dt = 0.0001; //temp
-	//real dt = 0.00005; //temp
-	real kap = 1.;
+const real dt = 0.0001; //time step (initial time step)
 
-	unsigned int save_output_interval = 10; //temp, default 25
-	unsigned int save_output_interval_interpolated = 500;
-	unsigned int step = 0; //Time in steps
- unsigned int step_end = 6000; //Endtime in steps;
+const	int nvl = std::ceil(kap*hh/dp); //number of boundary layers for ghost/virtual layer based BC
 
- std::string output_file_name = "results/particles_";
-	//std::string output_file_name_p_out = "p_out/particles_";
+// ========== SPH CONSTANTS ========== //
+const	real cs = 42.48; //speed of sound
+const real visco = 0.1; //viscosity (coef. of artificial viscosity for WCSPH, viscosity value otherwise)
+const	real delta = 0.1; //delta-SPH constant
 
- std::string output_file_namefo = "resultsfo/particles_";
+// ========== SIMULATION CONTROL ========== //
+const real t_max = 2.; //NOW ACTIVE YET
 
-	/*** Inlet and outlet zone settings ***/
+unsigned int step = 0; //Time in steps
+const unsigned int step_end = 30001; //Endtime in steps;
 
-	//Inlet constant buffer in  region.
-	realvec inlet_vel = {2. , 0.};
-	real inlet_x0 = 0.1 + 4*dp;
-	real inlet_y0 = 0.0 + dp;
+const unsigned int save_output_interval = 200; //Interval to save results
+const unsigned int save_output_interval_interpolated = 1000; //Interval to save interpolated results
 
-	//Outlet dynamic buffer in  region, with dynamic height
-	real outletDyn_x0 = 0.9-4*dp;
-	real outletDyn_y0 = 0.0 + dp;
-	real outletDyn_xm = 0.9;
-	real outletDyn_ym = 0.2;
+// ========== SIMULATION CONTROL ========== //
 
-	/*** Help & temp variables ***/
-
-	double hh = 1.1*sqrt(2*dp*dp);
-	//double hh = 0.02;
-	int nvl = std::ceil(kap*hh/dp);
-
-// OUTPUT FILES AND DIRECTORIES
+//Case directory
 std::string casePATH = "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/ALESPH_dambreak/";
 
-std::string fileName_resultsFluidOnly = casePATH + "OUTPUT/resultsFluidOnly/partFluidOnly_";
+std::string fileName_resultsFluidOnly = casePATH + "OUTPUT/resultsFluidOnly/partFluidOnly_"; //particles: fluid only
+std::string fileName_resultsAll = casePATH + "OUTPUT/resultsAll/partAll_"; //particles: all
+std::string fileName_particlesOut = casePATH + "OUTPUT/resultsAll/partAll_"; //particles: out of domain
 
-std::string fileName_resultsAll = casePATH + "OUTPUT/resultsAll/partAll_";
+std::string fileName_resultsInterpol = casePATH + "OUTPUT/resultsInterpolated/fieldInterpolated_"; //interpolated variables
 
-std::string fileName_resultsInterpol = casePATH + "OUTPUT/resultsInterpolated/fieldInterpolated_";
-
-std::string fileName_initCond = casePATH + "OUTPUT/initialCondition.vtk";
-
-std::string fileName_info = casePATH + "OUTPUT/simulationInfo.txt";
+std::string fileName_initCond = casePATH + "OUTPUT/initialCondition.vtk"; //initial condition
+std::string fileName_info = casePATH + "OUTPUT/simulationInfo.txt"; //simulation info
+std::string fileName_grid = casePATH + "OUTPUT/grid.vtk"; //find neighbour grid (case grid)
 
 
 

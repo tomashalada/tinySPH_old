@@ -175,10 +175,13 @@ void Compute_Acceleration_BT
 				vl = avL.x * drn.x + avL.y * drn.y;
 				vr = nvR.x * drn.x + nvR.y * drn.y;
 
-				//real avgc = cs(arho, rho0, c0) + cs(nrho, rho0, c0);
-				real avgc = c0;
+				real avgc = cs(arho, rho0, c0) + cs(nrho, rho0, c0);
+				//real avgc = c0;
+
+
+				//real beta = MIN(1, MAX(betaI, betaJ));
 				rhos = densRiemannLinearized(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
-				//rhos = densRiemannLinearizedWithLimiter(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
+				rhos = densRiemannLinearizedWithLimiter(arhoL, nrhoR, vl, vr, 0.5*(arhoL + nrhoR), avgc);
 				vss = velRiemannLinearized(arho, nrho, vl, vr, 0.5*(arhoL + nrhoR), avgc);
 
 				// //Riemann problem
@@ -202,8 +205,8 @@ void Compute_Acceleration_BT
 				//rhos = ps/(c0*c0)+ rho0;
 
 				vsdW = (vs.x - dv.x)*dW.x + (vs.y - dv.y)*dW.y;
-				vz = (av + nv)*0.5;
-				//vz = av;
+				//vz = (av + nv)*0.5;
+				vz = av;
 
 				//std::cout << "ACCELERATION >> Star/ rhos: " << rhos <<  " vss: " << vss << " vs: [" << vs.x << "," << vs.y << "]" << " drn: [" << drn.x << "," << drn.y << "]" << " W:" << W << \
 				 	"\n 1ID: " << particles.cells[zz].cp[i] << " 2ID: " << particles.cells[cl].cp[n] << " vl: " << vl << " vr:" << vr << " av: [" << av.x << "," << av.y << "]" << " nv: [" << nv.x << "," << nv.y << "]" << std::endl;
@@ -267,13 +270,13 @@ void Compute_Acceleration_BT
 			{
 
 				realvec zero = {0., 0.};
-				particles.special.omegaa[particles.cells[zz].cp[i]] = zero - particles.data_const.graviy*aomega*arho;
+				particles.special.domegav[particles.cells[zz].cp[i]] = zero - particles.data_const.graviy*aomega*arho;
 
 			}
 			else
 			{
 
-				particles.special.omegaa[particles.cells[zz].cp[i]] = omegaa_temp*aomega - particles.data_const.graviy*aomega*arho;
+				particles.special.domegav[particles.cells[zz].cp[i]] = omegaa_temp*aomega - particles.data_const.graviy*aomega*arho;
 
 			}
 

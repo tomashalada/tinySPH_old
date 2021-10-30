@@ -50,16 +50,33 @@ struct SPH_special
 
 	std::vector<realvec> gnr; //mDBC, ghost node position for walls
 	std::vector<realvec> n; //BT, boundary particles normals
+
 	std::vector<real> omega; //ALESPH particle volume
-	std::vector<real> domega; //ALESPH particle volume change
-	std::vector<real> domegarho; //ALESPH density and omega change
-	std::vector<realvec> omegaa; //ALESPH acceleration and omega
 	std::vector<real> omegarho;
 	std::vector<realvec> omegav;
+
+	std::vector<real> omega_o; //ALESPH particle volume
+	std::vector<real> omegarho_o;
+	std::vector<realvec> omegav_o;
+	std::vector<real> omega_oo; //ALESPH particle volume
+	std::vector<real> omegarho_oo;
+	std::vector<realvec> omegav_oo;
+
+	std::vector<real> domega; //ALESPH particle volume change
+	std::vector<real> domegarho; //ALESPH density and omega change
+	std::vector<realvec> domegav; //ALESPH acceleration and omega
 
 	std::vector<realvec> gradrho; //ALESPH MUSCL
 	std::vector<realvec> gradvx; //ALESPH MUSCL
 	std::vector<realvec> gradvy; //ALESPH MUSCL
+
+	//EXPERIMENT
+	std::vector<realvec> gradrhoF; //ALESPH MUSCL
+	std::vector<realvec> gradvxF; //ALESPH MUSCL
+	std::vector<realvec> gradvyF; //ALESPH MUSCL
+	std::vector<realvec> gradrhoB; //ALESPH MUSCL
+	std::vector<realvec> gradvxB; //ALESPH MUSCL
+	std::vector<realvec> gradvyB; //ALESPH MUSCL
 
 	real dtcv_temp=0;
 
