@@ -1652,3 +1652,181 @@ realvec Kernel_particles_concentration_gradient
 
 	return dC;
 }
+
+/* Approximate velocity with kernel aproximation to certain point */
+real Kernel_density_approximation_BT
+(Particle_system &particles, Simulation_data simulation_data, realvec ar, realvec gnd)
+{
+
+	real dens = 0; //vel. to return
+	real dens_temp = 0;
+
+	/* Corection matrix, velocity sum., velocity gradient sum. */
+
+	real a11x, a11inv;
+	real a12x, a12inv;
+	real a13x, a13inv;
+
+	real a21x, a21inv;
+	real a22x, a22inv;
+	real a23x, a23inv;
+
+	real a31x, a31inv;
+	real a32x, a32inv;
+	real a33x, a33inv;
+
+	real drhodx, drhody;
+
+	a11x = 0, a11inv = 0;
+	a12x = 0, a12inv = 0;
+	a13x = 0, a13inv = 0;
+
+	a21x = 0, a21inv = 0;
+	a22x = 0, a22inv = 0;
+	a23x = 0, a23inv = 0;
+
+	a31x = 0, a31inv = 0;
+	a32x = 0, a32inv = 0;
+	a33x = 0, a33inv = 0;
+
+	realvec vs = {0., 0.};
+
+	drhodx = 0, drhody = 0;
+
+
+	/* Get SPH constants. */
+
+	real kh, of, h, m;
+
+	kh = particles.data_const.kap*particles.data_const.h;
+	of = particles.data_const.h*0.273;
+	h = particles.data_const.h;
+	m = particles.data_const.m;
+
+	/* Get cell and nb's cells for point of aprotixmation. */
+
+	int npx, npy;
+	int ncx, ncy;
+	unsigned int ic; //cell index
+
+	ncx = particles.pairs.ncx;
+	ncy = particles.pairs.ncy;
+
+	npx = (int)((ar.x - simulation_data.x_0 + of)/kh);
+	npy = (int)((ar.y - simulation_data.y_0 + of)/kh);
+
+	idx c = POS(npx, npy, ncx, ncy);
+	idx zz, zp, pp, pz, pm, zm, mm, mz, mp;
+	std::vector<int> ac;
+
+	//Load indices of neighbour cells
+	zz = c;
+	zp = c + 1;
+	pp = c + 1 + ncy;
+	pz = c + ncy;
+	pm = c - 1 + ncy;
+	zm = c - 1;
+	mm = c - 1 - ncy;
+	mz = c - ncy;
+	mp = c + 1 - ncy;
+
+	ac = {zz, zp, pp, pz, pm, zm, mm, mz, mp};
+
+		/* Debug */
+		//std::cout << "KERNEL APPROX -> c: " << c << std::endl;
+		//std::cout << "KERNEL APPROX -> zz: " << zz << " zp: " << zp << " pp: " << pp << " pz: " << pz << " pm: " << pm << " zm: " << zm << " mm: " << mm << " mz:" << mz << " mp: " << mp << std::endl;
+
+	/* Interaction data */
+
+	realvec nr;
+	realvec nv;
+	realvec dr;
+	real drs;
+	real nrho;
+
+	double *kernel;
+
+	real Wsum = 0;
+	real rhoWsum = 0;
+
+
+	for(int &cl: ac)
+	{
+
+		if( cl < 0 ){continue;}
+		//experiment for(int n = 0; n < particles.cells[cl].np; n++)
+		for(int n = 0; n < particles.cells[cl].cp.size(); n++)
+		{
+
+			/* this shloud he here I guess */
+		if(particles.data.part_type[particles.cells[cl].cp[n]] != fluid){continue;}
+		//if(particles.data.part_type[particles.cells[cl].cp[n]] == wall){continue;}
+		//if(particles.data.part_type[particles.cells[cl].cp[n]] == inlet){continue;}
+
+		//Load data of neighbour particle
+		nr = particles.data.r[particles.cells[cl].cp[n]];
+		nv = particles.data.v[particles.cells[cl].cp[n]];
+		nrho = particles.data.rho[particles.cells[cl].cp[n]];
+
+		//Position and velocity difference
+		dr = ar - nr;
+		drs = sqrt(dr.x*dr.x + dr.y*dr.y);
+		//drdv = dr.x*dv.x + dr.y*dv.y;
+
+		/* get kernel values
+		double *Wendland_kernel(double r, double h) */
+		kernel = Wendland_kernel(drs, h);
+
+		Wsum += kernel[0];
+		rhoWsum += m*kernel[0];
+
+		drhodx += dr.x*kernel[1] * m;
+		drhody += dr.y*kernel[1] * m;
+
+		a11x += kernel[0]*(m/nrho);
+		a12x += dr.x*kernel[0]*(m/nrho);
+		a13x += dr.y*kernel[0]*(m/nrho);
+
+		a21x += dr.x*kernel[1]*(m/nrho);
+		a22x += dr.x*dr.x*kernel[1]*(m/nrho);
+		a23x += dr.x*dr.y*kernel[1]*(m/nrho);
+
+		a31x += dr.y*kernel[1]*(m/nrho);
+		a32x += dr.y*dr.x*kernel[1]*(m/nrho);
+		a33x += dr.y*dr.y*kernel[1]*(m/nrho);
+
+		/* Debug */
+		//std::cout << "KERNEL. APROX: nv: [" << nv.x << "," << nv.y << "]" << std::endl;
+
+		} // cycle over particles in neighbour cells
+
+	} // cycle over neighbour cells
+
+	real det;
+	det = determinant(a11x, a12x, a13x, a21x, a22x, a23x, a31x, a32x, a33x);
+
+	//std::cout << "[ KERNEL GHOST NODE AROXIMATION ] Determinant: " << det << std::endl;
+	if (a11x>0)
+	{
+
+	dens = rhoWsum/a11x;
+
+	//// VEL_APROX = VEL_APROX + vWsum / Wsum; //??? make it better
+	//// //VEL_APROX = VEL_APROX + vWsum; //??? make it better
+
+	//std::cout << " --> Case B: ACTIVE." << std::endl;
+
+	}
+	else
+	{
+
+		dens = 1000.;
+
+	//std::cout << " --> Case C: ACTIVE." << std::endl;
+
+	}
+
+	return dens;
+
+
+}
