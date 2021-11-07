@@ -76,6 +76,7 @@ void Density_to_pressure
 			if(particles.data.rho[p] > 1500. || particles.data.rho[p] < 0.)
 			{std::cout << "=== ERROR ===  Particle density too high, rho: " << particles.data.rho[p] << std::endl;}
 
+
 			particles.data.p[p] = Compute_Pressure(particles.data.rho[p], particles.data_const.rho0, particles.data_const.cs);
 
 			/* Test */

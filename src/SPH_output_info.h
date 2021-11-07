@@ -57,4 +57,14 @@ void Write_basic_simulation_info
 
 }
 
+void Write_water_level
+(real step, real wl, std::string output_file_name_wl)
+{
+	std::ofstream fileWL;
+	fileWL.open(output_file_name_wl, std::ios_base::app);
+	fileWL << step << " " << wl << std::endl;
+	fileWL.close();
+}
+
+
 

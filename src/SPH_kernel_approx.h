@@ -1830,3 +1830,121 @@ real Kernel_density_approximation_BT
 
 
 }
+
+/* Approximate velocity with kernel aproximation to certain point */
+real Kernel_density_approximation_BT_update
+(Particle_system &particles, Simulation_data simulation_data, realvec ar, realvec gnd)
+{
+
+	real dens = 0; //vel. to return
+	real dens_temp = 0;
+
+	realvec vs = {0., 0.};
+
+	/* Get SPH constants. */
+
+	real kh, of, h, m;
+
+	kh = particles.data_const.kap*particles.data_const.h;
+	of = particles.data_const.h*0.273;
+	h = particles.data_const.h;
+	m = particles.data_const.m;
+
+	/* Get cell and nb's cells for point of aprotixmation. */
+
+	int npx, npy;
+	int ncx, ncy;
+	unsigned int ic; //cell index
+
+	ncx = particles.pairs.ncx;
+	ncy = particles.pairs.ncy;
+
+	npx = (int)((ar.x - simulation_data.x_0 + of)/kh);
+	npy = (int)((ar.y - simulation_data.y_0 + of)/kh);
+
+	idx c = POS(npx, npy, ncx, ncy);
+	idx zz, zp, pp, pz, pm, zm, mm, mz, mp;
+	std::vector<int> ac;
+
+	//Load indices of neighbour cells
+	zz = c;
+	zp = c + 1;
+	pp = c + 1 + ncy;
+	pz = c + ncy;
+	pm = c - 1 + ncy;
+	zm = c - 1;
+	mm = c - 1 - ncy;
+	mz = c - ncy;
+	mp = c + 1 - ncy;
+
+	ac = {zz, zp, pp, pz, pm, zm, mm, mz, mp};
+
+	realvec nr;
+	realvec nv;
+	realvec dr;
+	real drs;
+	real nrho;
+
+	double *kernel;
+
+	real Wsum = 0;
+	real rhoWsum = 0;
+
+
+	for(int &cl: ac)
+	{
+
+		if( cl < 0 ){continue;}
+		//experiment for(int n = 0; n < particles.cells[cl].np; n++)
+		for(int n = 0; n < particles.cells[cl].cp.size(); n++)
+		{
+
+		// if((ar.x > 0.0 - eps) && (ar.x < 0.0 + eps) && (ar.y > 0.7 - eps) && (ar.y < 0.7 + eps))
+		// {
+		// 	std::cout << "BT_NB_PARTICLE: wr: [" << ar.x << "," << ar.y << "] " << std::endl;
+		// }
+
+			/* this shloud he here I guess */
+		if(particles.data.part_type[particles.cells[cl].cp[n]] != fluid){continue;}
+		//if(particles.data.part_type[particles.cells[cl].cp[n]] == wall){continue;}
+		//if(particles.data.part_type[particles.cells[cl].cp[n]] == inlet){continue;}
+
+		//Load data of neighbour particle
+		nr = particles.data.r[particles.cells[cl].cp[n]];
+		nv = particles.data.v[particles.cells[cl].cp[n]];
+		nrho = particles.data.rho[particles.cells[cl].cp[n]];
+
+		//Position and velocity difference
+		dr = ar - nr;
+		drs = sqrt(dr.x*dr.x + dr.y*dr.y);
+		//drdv = dr.x*dv.x + dr.y*dv.y;
+
+		/* get kernel values
+		double *Wendland_kernel(double r, double h) */
+		kernel = Wendland_kernel(drs, h);
+
+		Wsum += kernel[0]*m/nrho;
+		rhoWsum += m*kernel[0];
+
+		// if((nr.x > 0.0 - eps) && (nr.x < 0.0 + eps) && (nr.y > 0.7 - eps) && (nr.y < 0.7 + eps))
+		// {
+		// 	std::cout << "BT_NB_PARTICLE: wr: [" << nr.x << "," << nr.y << "] rho: " << particles.data.part_type[particles.cells[cl].cp[n]] << std::endl;
+		// }
+
+
+		} // cycle over particles in neighbour cells
+
+	} // cycle over neighbour cells
+
+
+	if (Wsum>0.)
+	{
+	dens = rhoWsum/Wsum;
+	}
+	else
+	{
+		dens = 1000.;
+	}
+
+	return dens;
+}

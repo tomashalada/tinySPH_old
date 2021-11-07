@@ -5,11 +5,17 @@
 //#include "../cases/stillWater_mDBC/SPH_simulationVerlet.h"
 //#include "../cases/stillWater_mDBC/SPH_simulationLeapFrog.h"
 
+// --- Still Watter BT --- //
+//#include "../cases/stillWater_BT/SPH_simulationSymplectic.h"
+
+// --- RALESPH Still Watter --- //
+//#include "../cases/ALESPH_stillWater/MUSCL.h"
+
 // --- DamBreak mDBC --- //
 //#include "../cases/damBreak_mDBC/SPH_simulationSymplectic.h"
 
 // --- DamBreak BT --- //
-#include "../cases/damBreak_BT/SPH_simulationSymplectic.h"
+//#include "../cases/damBreak_BT/SPH_simulationSymplectic.h"
 
 // --- RSPH DamBreak --- //
 //#include "../cases/RSPH_dambreak/SPH_simulation.h"
@@ -22,6 +28,16 @@
 // --- inflowSlab mDBC --- //
 //#include "../cases/inflowSlab_mDBC/SPH_simulationSymplectic.h"
 //tohle zatim nefunguje: #include "../cases/inflowSlab_mDBC/SPH_simulationVerlet.h"
+
+//DP CASES
+// --- DamBreak mDBC --- //
+//#include "../cases/damBreakLong_mDBC/SPH_simulationSymplectic.h"
+#include "../cases/damBreakLong_mDBC/SPH_simulationVerlet.h"
+//#include "../cases/damBreakLong_mDBC/SPH_simulationLeapFrog.h"
+
+//#include "../cases/damBreakLong_BT/SPH_simulationSymplectic.h"
+//#include "../cases/ALESPH_dambreakLong/MUSCL.h"
+//#include "../cases/ALESPH_dambreakLong/SPH_simulationINT.h"
 
 
 int main(){
