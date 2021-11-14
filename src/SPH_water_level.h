@@ -40,13 +40,10 @@ real Sum_kernel_function
 
 	ac = {zz, zp, pp, pz, pm, zm, mm, mz, mp};
 
-	realvec nr = {0., 0.};
-	realvec dr = {0., 0.};
-	real drs = 0;
-	real nrho = 0;
 
 	double *kernel;
 
+	real Wsum = 0;
 	real mWsum = 0;
 
 	for(int &cl: ac)
@@ -63,22 +60,24 @@ real Sum_kernel_function
 		//if(particles.data.part_type[particles.cells[cl].cp[n]] == inlet){continue;}
 
 		//Load data of neighbour particle
-		nr = particles.data.r[particles.cells[cl].cp[n]];
-		nrho = particles.data.rho[particles.cells[cl].cp[n]];
+		realvec nr = particles.data.r[particles.cells[cl].cp[n]];
+		real nrho = particles.data.rho[particles.cells[cl].cp[n]];
 
 		//Position and velocity difference
-		dr = ar - nr;
-		drs = sqrt(pow(dr.x, 2) + pow(dr.y, 2));
+		realvec dr = ar - nr;
+		real drs = sqrt(pow(dr.x, 2) + pow(dr.y, 2));
 
 		/* get kernel values
 		double *Wendland_kernel(double r, double h) */
 		kernel = Wendland_kernel(drs, h);
 
+		Wsum += kernel[0];
 		mWsum += m*kernel[0]/nrho;
 
 		} // cycle over particles in neighbour cells
 	} // cycle over neighbour cells
 
+	//if(Wsum == 0){mWsum = 0;}
 	return mWsum;
 }
 
@@ -108,6 +107,39 @@ real Water_Elevation
 		{
 
 			WL = ar.y - i*dp_wl;
+			break;
+		}
+	}
+	std::cout << " " << std::endl;
+
+
+	return WL;
+}
+
+
+real Water_Elevation_inverse
+(Particle_system &particles, Simulation_data simulation_data, real x, real y0)
+{
+	real WL;
+
+	const real dp = particles.data_const.dp;
+	const real dp_wl = dp*0.00005; //sampling step
+
+	realvec ar = {x, y0};
+	//std::vector<real> mWsum_y;
+	real mWsum_prev;
+
+	for(int i = 0; i < int(simulation_data.y_m/dp_wl); i++)
+	{
+		ar.y -= i*dp_wl;
+		real mWsum = Sum_kernel_function(particles, simulation_data, ar);
+
+		//if(mWsum < 0.5 && mWsum_prev < 0.5)
+		//std::cout << ar.y/0.3 << " ";
+		if(mWsum >= 0.5)
+		{
+
+			WL = ar.y + i*dp_wl;
 			break;
 		}
 	}

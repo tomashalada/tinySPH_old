@@ -34,6 +34,9 @@ real Density_Diffusion_term_MOLTENI
 	PSI_s = 2. * c0 * h * delta * (nrho - arho) / (drs*drs + eps*h*h);
 	DT = PSI_s * drdW * m / nrho;
 
+	//PSI_s = 2. * c0 * h * delta * (arho/nrho - 1.) / (drs*drs + eps*h*h);
+	//DT = PSI_s * drdW * m ;
+
 	return DT;
 
 }

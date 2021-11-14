@@ -1,3 +1,4 @@
+#pragma once
 #include "SPH_defs.h"
 #include "SPH_particle_system.h"
 #include "SPH_kernel.h"

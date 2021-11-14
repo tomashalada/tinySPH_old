@@ -57,7 +57,9 @@ void Compute_Forces
 		for(int i = 0; i < particles.cells[zz].cp.size(); i++)
 		{
 
-			if(particles.data.part_type[particles.cells[zz].cp[i]] != fluid){continue;}
+			//if(particles.data.part_type[particles.cells[zz].cp[i]] != fluid){continue;}
+			if(particles.data.part_type[particles.cells[zz].cp[i]] == inlet){continue;}
+			if(particles.data.part_type[particles.cells[zz].cp[i]] == outlet){continue;}
 
 			//Load data of actual particle
 			idx ai = particles.cells[zz].cp[i]; //actual particle index
@@ -78,6 +80,8 @@ void Compute_Forces
 				//Load data of neighbour particle
 				idx ni = particles.cells[cl].cp[n]; //actual particle index
 				if(ai == ni){continue;}
+
+				if(particles.data.part_type[ai] == wall && particles.data.part_type[ni] == wall){continue;}
 
 				const realvec nr = particles.data.r[ni]; //position of ative particle
 				const realvec nv = particles.data.v[ni];; //position of ative particle
@@ -118,10 +122,9 @@ void Compute_Forces
 				// ========== CONTINUITY EQN ========== //
 				real diff_term = 0; // delta diffusion term
 
-				diff_term = Density_Diffusion_term_FOURTAKAS(h, drs, dr.y, drdW, arho, nrho, rho0, c0, delta, m, gravity.y);
-				//diff_term = Density_Diffusion_term_MOLTENI(h, drs, drdW, arho, nrho, c0, delta, m);
-				if(particles.data.part_type[ni] == wall){diff_term = 0.;}
-
+				//diff_term = Density_Diffusion_term_FOURTAKAS(h, drs, dr.y, drdW, arho, nrho, rho0, c0, delta, m, gravity.y);
+				diff_term = Density_Diffusion_term_MOLTENI(h, drs, drdW, arho, nrho, c0, delta, m);
+				//if(particles.data.part_type[ni] == wall){diff_term = 0.;}
 
 				//drho_sum += dvdW*m/nrho;
 				drho_sum += dvdW*m;
@@ -131,7 +134,10 @@ void Compute_Forces
 			} // cycle over neighbour cells
 
 			//Assign acceleration to particle
-			particles.data.a[ai] = ac_sum - particles.data_const.graviy;
+			if(particles.data.part_type[ai] == wall)
+			{particles.data.a[ai] = {0., 0.};}
+			else
+			{particles.data.a[ai] = ac_sum - particles.data_const.graviy;}
 			//particles.data.rho[ai] = drho_sum*arho + diff_sum;
 			particles.data.drho[ai] = drho_sum + diff_sum;
 

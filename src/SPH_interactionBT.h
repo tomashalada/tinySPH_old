@@ -135,8 +135,8 @@ void Compute_Forces
 				// ========== CONTINUITY EQN ========== //
 				real diff_term = 0; // delta diffusion term
 
-				//diff_term = Density_Diffusion_term_FOURTAKAS(h, drs, dr.y, drdW, arho, nrho, rho0, c0, delta, m, gravity.y);
-				diff_term = Density_Diffusion_term_MOLTENI(h, drs, drdW, arho, nrho, c0, delta, m);
+				diff_term = Density_Diffusion_term_FOURTAKAS(h, drs, dr.y, drdW, arho, nrho, rho0, c0, delta, m, gravity.y);
+				//diff_term = Density_Diffusion_term_MOLTENI(h, drs, drdW, arho, nrho, c0, delta, m);
 				//if(particles.data.part_type[ni] == wall){diff_term = 0.;}
 
 				//drho_sum += dvdW*m/nrho;
@@ -155,10 +155,12 @@ void Compute_Forces
 
 				// ========== CONTINUITY EQN ========== //
 
+				if(particles.data.part_type[ni] == fluid)
 				gamma += W*m/nrho;
 
 				} // cycle over particles in neighbour cells
 			} // cycle over neighbour cells
+
 
 			//Assign acceleration to particle
 			particles.data.a[ai] = ac_sum/gamma - particles.data_const.graviy;
