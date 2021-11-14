@@ -2,14 +2,14 @@
 
 //===========================TEST=CASES==============================//
 // ========= DamBreak mDBC ======== //
-//#include "../cases/damBreakLong_mDBC/SPH_simulationSymplectic.h"
+#include "../cases/damBreakLong_mDBC/SPH_simulationSymplectic.h"
 //#include "../cases/damBreakLong_mDBC/SPH_simulationVerlet.h"
 //#include "../cases/damBreakLong_mDBC/SPH_simulationLeapFrog.h"
 
 // ========= DamBreak DBC ======== //
 //#include "../cases/damBreakLong_DBC/SPH_simulationSymplectic.h"
 //#include "../cases/damBreakLong_DBC/SPH_simulationVerlet.h"
-#include "../cases/damBreakLong_DBC/SPH_simulationLeapFrog.h"
+//#include "../cases/damBreakLong_DBC/SPH_simulationLeapFrog.h"
 
 //===================================================================//
 
