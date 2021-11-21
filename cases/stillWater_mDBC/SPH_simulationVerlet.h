@@ -12,6 +12,8 @@
 #include "SPH_mDBC.h"
 #include "SPH_btdebug.h"
 
+#include "SPH_measure_pressure.h"
+
 //#include "SPH_moving_boundary.h"
 //#include "SPH_inlet_outlet.h" //inlet, outlet, functions
 //#include "SPH_inlet_outlet_data.h" //inlet, outlet zones structures
@@ -85,9 +87,16 @@ struct SPH_simulation
 		std::cout << "SIMULATION -> RUN: Compute forces. DONE. " << std::endl;
 
 		/* Integration */
-		Integrate_SymplecticPredictor(particles, dt);
-		if(step > 1 || step%40 != 0){Integrate_Verlet(particles, dt);}
-		Integrate_Euler(particles, dt);
+		if(step > 1 && step%20 != 0)
+		{
+			Integrate_Verlet(particles, dt);
+			std::cout << "Integration scheme: VERLET." << std::endl;
+		}
+		else
+		{
+			Integrate_Euler(particles, dt);
+			std::cout << "Integration scheme: EULER." << std::endl;
+		}
 		std::cout << "SIMULATION -> RUN: First part of integraion. DONE. " << std::endl;
 
 		/* Remove partiocles out of domain */
@@ -129,6 +138,11 @@ struct SPH_simulation
 			GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.0, 0., 0.8, 0.7);
 			std::cout << "[INTERPOLATION - DONE and SAVED.]" << std::endl;
 		}
+
+		if(step == 10000)
+		{Output_hydrostatic_pressure(particles, fileName_hp_2s);}
+		if(step == 20000)
+		{Output_hydrostatic_pressure(particles, fileName_hp_4s);}
 
 		} // Main time loop.
 	} // RUN function

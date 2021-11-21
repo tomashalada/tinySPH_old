@@ -12,6 +12,8 @@
 #include "SPH_mDBC.h"
 #include "SPH_btdebug.h"
 
+#include "SPH_measure_pressure.h"
+
 //#include "SPH_moving_boundary.h"
 //#include "SPH_inlet_outlet.h" //inlet, outlet, functions
 //#include "SPH_inlet_outlet_data.h" //inlet, outlet zones structures
@@ -124,6 +126,11 @@ struct SPH_simulation
 			GenerateInterpol(particles, simulation_data, output_file_nameInterpol, 0.0, 0., 0.8, 0.7);
 			std::cout << "[INTERPOLATION - DONE and SAVED.]" << std::endl;
 		}
+
+		if(step == 10000)
+		{Output_hydrostatic_pressure(particles, fileName_hp_2s);}
+		if(step == 20000)
+		{Output_hydrostatic_pressure(particles, fileName_hp_4s);}
 
 		} // Main time loop.
 	} // RUN function

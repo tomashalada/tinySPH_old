@@ -1948,3 +1948,113 @@ real Kernel_density_approximation_BT_update
 
 	return dens;
 }
+
+/* GWBC */ /* GWBC */ /* GWBC */ /* GWBC */ /* GWBC */
+real GWBC_pressure_approximation
+(Particle_system &particles, Simulation_data simulation_data, realvec ar)
+{
+
+	real PW = 0.;
+
+	/* Get cell and nb's cells for point of aprotixmation. */
+	real kh, of;
+	kh = particles.data_const.kap*particles.data_const.h;
+	of = particles.data_const.h*0.273;
+	real h = particles.data_const.h;
+	real m = particles.data_const.m;
+	realvec g = particles.data_const.graviy;
+
+	int npx, npy;
+	int ncx, ncy;
+
+	ncx = particles.pairs.ncx;
+	ncy = particles.pairs.ncy;
+
+	npx = (int)((ar.x - simulation_data.x_0 + of)/kh);
+	npy = (int)((ar.y - simulation_data.y_0 + of)/kh);
+
+	idx c = POS(npx, npy, ncx, ncy);
+	idx zz, zp, pp, pz, pm, zm, mm, mz, mp;
+	std::vector<int> ac;
+
+	//Load indices of neighbour cells
+	zz = c;
+	zp = c + 1;
+	pp = c + 1 + ncy;
+	pz = c + ncy;
+	pm = c - 1 + ncy;
+	zm = c - 1;
+	mm = c - 1 - ncy;
+	mz = c - ncy;
+	mp = c + 1 - ncy;
+
+	ac = {zz, zp, pp, pz, pm, zm, mm, mz, mp};
+
+		/* Debug */
+		//std::cout << "ACCELERATION VEL. KERNEL APPROX -> c: " << c << std::endl;
+		//std::cout << "ACCELERATION VEL. KERNEL APPROX -> zz: " << zz << " zp: " << zp << " pp: " << pp << " pz: " << pz << " pm: " << pm << " zm: " << zm << " mm: " << mm << " mz:" << mz << " mp: " << mp << std::endl;
+
+	realvec nr;
+	realvec nv;
+	realvec dr;
+	real drs;
+	real nrho;
+	//real drdv;
+
+	double *kernel;
+
+	realvec vWsum = {0., 0.};
+	real Wsum = 0;
+	real PWsum = 0;
+	realvec vvv = {0., 0.};
+	//realvec vWsum;
+	//real Wsum ;
+
+	for(int &cl: ac)
+	{
+
+		if( cl < 0 ){continue;}
+		//experiment for(int n = 0; n < particles.cells[cl].np; n++)
+		for(int n = 0; n < particles.cells[cl].cp.size(); n++)
+		{
+
+			/* this shloud he here I guess */
+		if(particles.data.part_type[particles.cells[cl].cp[n]] != fluid){continue;}
+		//if(particles.data.part_type[particles.cells[cl].cp[n]] == wall){continue;}
+		//if(particles.data.part_type[particles.cells[cl].cp[n]] == inlet){continue;}
+
+		//Load data of neighbour particle
+		realvec nr = particles.data.r[particles.cells[cl].cp[n]];
+		realvec nv = particles.data.v[particles.cells[cl].cp[n]];
+		real nrho = particles.data.rho[particles.cells[cl].cp[n]];
+		real np = particles.data.p[particles.cells[cl].cp[n]];
+
+		//Position and velocity difference
+		dr = ar - nr;
+		drs = sqrt(pow(dr.x, 2) + pow(dr.y, 2));
+		//drdv = dr.x*dv.x + dr.y*dv.y;
+
+		/* get kernel values
+		double *Wendland_kernel(double r, double h) */
+		kernel = Wendland_kernel(drs, h);
+		real W = kernel[0];
+
+		Wsum += kernel[0];
+		PWsum += np*W + nrho*W*(g.y*dr.y);
+
+		/* Debug */
+		//std::cout << "KERNEL. APROX: nv: [" << nv.x << "," << nv.y << "]" << std::endl;
+
+
+		} // cycle over particles in neighbour cells
+
+	} // cycle over neighbour cells
+
+	PW = PWsum / Wsum; //??? make it better
+	//VEL_APROX = VEL_APROX + vWsum; //??? make it better
+	//VEL_APROX = VEL_APROX + vvv; //??? make it better
+
+	if(Wsum == 0){PW = 0;}
+
+	return PW;
+}

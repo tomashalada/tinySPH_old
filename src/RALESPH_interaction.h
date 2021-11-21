@@ -191,8 +191,8 @@ void Compute_Forces
 				//----- Roe with density ----- //
 				//real vss = velRiemannLinearizedwithPressure(rhoL, rhoR, vL, vR, ap, np, 0.5*(arho + nrho), c0);
 				real vss = velRiemannLinearized(rhoL, rhoR, vL, vR, avgrho, avgc);
-				real rhos = densRiemannLinearized(rhoL, rhoR, vL, vR, avgrho, avgc);
-				//real rhos = densRiemannLinearizedWithLimiter(arho, nrho, vL, vR, 0.5*(arho + nrho), avgc);
+				//real rhos = densRiemannLinearized(rhoL, rhoR, vL, vR, avgrho, avgc);
+				real rhos = densRiemannLinearizedWithLimiter(arho, nrho, vL, vR, 0.5*(arho + nrho), avgc);
 				real ps = Compute_Pressure(rhos,  rho0,  c0);
 				realvec vs = drn * vss + ((av + nv)*0.5 - drn*(vL + vR)*0.5); //reconstruct
 

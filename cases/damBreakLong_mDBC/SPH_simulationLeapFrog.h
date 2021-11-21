@@ -24,7 +24,7 @@
 struct SPH_simulation
 {
 
-	#include "constants.h"
+	#include "constants_mp.h"
 
 	// Simulation objects and shared structures
 	Particle_system particles;

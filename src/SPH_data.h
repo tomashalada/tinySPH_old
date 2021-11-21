@@ -79,6 +79,7 @@ struct SPH_special
 	std::vector<realvec> gradvyB; //ALESPH MUSCL
 
 	real dtcv_temp=0;
+	std::vector<real> rhoTemp;
 
 };
 

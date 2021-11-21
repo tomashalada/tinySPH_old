@@ -194,7 +194,7 @@ void Integrate_LeapFrog_partTwo_withDensity
 		for(int p = 0; p < particles.np; p++)
 		{
 
-			if(particles.data.part_type[p] == fluid)
+			//if(particles.data.part_type[p] == fluid)
 			{
 
 				particles.data.v[p] = particles.data.v[p] + particles.data.a[p] * dt * 0.5;
@@ -213,13 +213,13 @@ void Integrate_LeapFrog_partTwo_withDensity
 		for(int p = 0; p < particles.np; p++)
 		{
 
-			if(particles.data.part_type[p] == fluid)
+			//if(particles.data.part_type[p] == fluid)
 			{
 
 			//particles.data.v[p] = particles.data.v[p] + particles.data.a[p] * dt;
+			particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
 			particles.data.v[p] = particles.data.v_o[p] + particles.data.a[p] * dt;
 			particles.data.rho[p] = particles.data.rho_o[p] + particles.data.drho[p] * dt;
-			particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
 
 			} // if function - check part type
 
@@ -307,3 +307,81 @@ void Integrate_SymplecticCorrector
 		} // if function - check part type
 	} // cycle over particles
 } // function
+
+//OPRAVENY LEAPFROG INTEGRATOR
+//: void Integrate_LeapFrog_partOne_withDensity
+//: (Particle_system &particles, double dt)
+//: {
+//:
+//: 	#pragma omp parallel for schedule(static)
+//: 	for(int p = 0; p < particles.np; p++)
+//: 	{
+//:
+//: 		//if(particles.data.part_type[p] == fluid)
+//: 		{
+//:
+//: 			//particles.data.v_o[p] = particles.data.v[p];
+//: 			//particles.data.rho_o[p] = particles.data.rho[p];
+//:
+//:
+//: 			particles.data.v[p] = particles.data.v_o[p] + particles.data.a[p] * dt;
+//: 			particles.data.rho[p] = particles.data.rho_o[p] + particles.data.drho[p]*dt;
+//:
+//: 		} // if function - check part type
+//:
+//:
+//: 	} // cycle over particles
+//:
+//: } // function
+//:
+//: void Integrate_LeapFrog_partTwo_withDensity
+//: (Particle_system &particles, double dt, int step)
+//: {
+//:
+//: 	if(step == 1)
+//: 	{
+//:
+//: 		//#pragma omp parallel for schedule(static)
+//: 		for(int p = 0; p < particles.np; p++)
+//: 		{
+//:
+//: 			if(particles.data.part_type[p] == fluid)
+//: 			{
+//:
+//: 				particles.data.v_o[p] = particles.data.v[p];
+//: 				particles.data.rho_o[p] = particles.data.rho[p];
+//:
+//: 				particles.data.v[p] = particles.data.v[p] + particles.data.a[p] * dt * 0.5;
+//: 				particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt * 0.5;
+//: 				particles.data.rho[p] = particles.data.rho[p] + particles.data.drho[p] * dt * 0.5;
+//:
+//: 			} // if function - check part type
+//:
+//: 		} // loop over particles
+//:
+//: 	} // if function - check step
+//: 	else
+//: 	{
+//:
+//: 		#pragma omp parallel for schedule(static)
+//: 		for(int p = 0; p < particles.np; p++)
+//: 		{
+//:
+//: 			if(particles.data.part_type[p] == fluid)
+//: 			{
+//:
+//: 			particles.data.v_o[p] = particles.data.v[p];
+//: 			particles.data.rho_o[p] = particles.data.rho[p];
+//:
+//: 			//particles.data.v[p] = particles.data.v[p] + particles.data.a[p] * dt;
+//: 			particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
+//: 			particles.data.v[p] = particles.data.v[p] + particles.data.a[p] * dt * 0.5;
+//: 			particles.data.rho[p] = particles.data.rho[p] + particles.data.drho[p] * dt * 0.5;
+//:
+//: 			} // if function - check part type
+//:
+//: 		} // loop over particles
+//:
+//: 	} // if function - check step
+//:
+//: } // function

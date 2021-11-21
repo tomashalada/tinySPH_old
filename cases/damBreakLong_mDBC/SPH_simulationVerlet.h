@@ -187,7 +187,6 @@ struct SPH_simulation
 			Write_water_level(step*dt*timeCoef, p_h4*pCoef, fileName_waterLevel_p4);
 		}
 
-
 		} // Main time loop.
 	} // RUN function
 

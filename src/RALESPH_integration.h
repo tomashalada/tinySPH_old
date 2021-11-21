@@ -25,8 +25,11 @@ void Integrate_LeapFrog_partOne
 			particles.special.omegarho[p] = particles.special.omegarho[p] + particles.special.domegarho[p] * dt * 0.5;
 			particles.special.omegav[p] = particles.special.omegav[p] + particles.special.domegav[p] * dt * 0.5;
 
-			particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
+			//particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
+			//particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
+
 			particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
+			particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
 		}
 
 	} // cycle over particles
@@ -54,8 +57,11 @@ void Integrate_LeapFrog_partTwo
 				particles.special.omegarho[p] = particles.special.omegarho[p] + particles.special.domegarho[p] * dt * 0.5;
 				particles.special.omegav[p] = particles.special.omegav[p] + particles.special.domegav[p] * dt * 0.5;
 
-				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
+				//particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
+				//particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
+
 				particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
+				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
 
 				particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt * 0.5;
 
@@ -73,14 +79,27 @@ void Integrate_LeapFrog_partTwo
 			if(particles.data.part_type[p] == fluid)
 			{
 
-		 	particles.special.omega[p] = particles.special.omega_o[p] + particles.special.domega[p] * dt * 0.5;
-				particles.special.omegarho[p] = particles.special.omegarho_o[p] + particles.special.domegarho[p] * dt * 0.5;
-				particles.special.omegav[p] = particles.special.omegav_o[p] + particles.special.domegav[p] * dt * 0.5;
+		 	//to tu bylo: particles.special.omega[p] = particles.special.omega_o[p] + particles.special.domega[p] * dt * 0.5;
+				//to tu bylo: particles.special.omegarho[p] = particles.special.omegarho_o[p] + particles.special.domegarho[p] * dt * 0.5;
+				//to tu bylo: particles.special.omegav[p] = particles.special.omegav_o[p] + particles.special.domegav[p] * dt * 0.5;
 
-				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
-				particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
+				//to tu bylo: particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
+				//to tu bylo: particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
+
+				//to tu bylo: particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
 
 				particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt;
+
+		 	particles.special.omega[p] = particles.special.omega_o[p] + particles.special.domega[p] * dt;
+				particles.special.omegarho[p] = particles.special.omegarho_o[p] + particles.special.domegarho[p] * dt;
+				particles.special.omegav[p] = particles.special.omegav_o[p] + particles.special.domegav[p] * dt;
+
+				//particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
+				//particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
+
+				particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
+				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
+
 
 			} // if function - check part type
 		} // loop over particles
@@ -99,17 +118,16 @@ void Integrate_Verlet
  		//if(particles.data.part_type[p] == fluid)
  		{
 
-		 	particles.special.omega[p] = particles.special.omega_oo[p] + particles.special.domega[p] * dt * 0.5;
-				particles.special.omegarho[p] = particles.special.omegarho_oo[p] + particles.special.domegarho[p] * dt * 0.5;
-				particles.special.omegav[p] = particles.special.omegav_oo[p] + particles.special.domegav[p] * dt * 0.5;
+		 	particles.special.omega[p] = particles.special.omega_oo[p] + particles.special.domega[p] * dt * 2;
+				particles.special.omegarho[p] = particles.special.omegarho_oo[p] + particles.special.domegarho[p] * dt * 2;
+				particles.special.omegav[p] = particles.special.omegav_oo[p] + particles.special.domegav[p] * dt * 2;
 
  			//particles.data.v[p] = particles.data.v_oo[p] + particles.data.a[p] * dt * 2 ;
+				particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
 				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
 
  			particles.data.r[p] = particles.data.r[p] + particles.data.v_o[p] * dt + particles.special.domegav[p] * dt *dt * 0.5/particles.special.omega[p];
 
- 			//particles.data.rho[p] = particles.data.rho_oo[p] + particles.data.drho[p] * dt * 2 ;
-				particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
 
 
  			//Move time layers
@@ -142,23 +160,15 @@ void Integrate_Verlet
  		//if(particles.data.part_type[p] == fluid)
  		{
 
- 			particles.data.v[p] = particles.data.v[p] + particles.data.a[p] * dt ;
- 			particles.data.r[p] = particles.data.r[p] + particles.data.v_o[p] * dt + particles.data.a[p] * dt * dt* 0.5;
-
- 			particles.data.rho[p] = particles.data.rho[p] + particles.data.drho[p] * dt;
- 			//particles.data.p[p] = Compute_Pressure(particles.data.rho[p], particles.data_const.rho0, particles.data_const.cs);
-
 		 	particles.special.omega[p] = particles.special.omega[p] + particles.special.domega[p] * dt;
 				particles.special.omegarho[p] = particles.special.omegarho[p] + particles.special.domegarho[p] * dt;
 				particles.special.omegav[p] = particles.special.omegav[p] + particles.special.domegav[p] * dt ;
 
- 			//particles.data.v[p] = particles.data.v_oo[p] + particles.data.a[p] * dt * 2 ;
+				particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
 				particles.data.v[p] = particles.special.omegav[p] / (particles.data.rho[p]*particles.special.omega[p]);
 
  			particles.data.r[p] = particles.data.r[p] + particles.data.v_o[p] * dt + particles.special.domegav[p] * dt *dt * 0.5/particles.special.omega[p];
 
- 			//particles.data.rho[p] = particles.data.rho_oo[p] + particles.data.drho[p] * dt * 2 ;
-				particles.data.rho[p] = particles.special.omegarho[p] /( particles.special.omega[p]);
 
  			//Move time layers
  			particles.data.v_oo[p] = particles.data.v_o[p];

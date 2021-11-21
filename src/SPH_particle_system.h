@@ -45,6 +45,8 @@ struct Particle_system
 		data.v_o.push_back(_v);
 		data.v_oo.push_back(_v);
 
+		special.rhoTemp.push_back(_rho);
+
 	}
 
 	//Function to create new particles
@@ -100,6 +102,8 @@ struct Particle_system
 		data.v_o.push_back(_v);
 		data.v_oo.push_back(_v);
 
+		special.rhoTemp.push_back(_rho);
+
 	}
 
 	//Function to create new particles
@@ -136,6 +140,46 @@ struct Particle_system
 		data.v_oo.erase(data.v_oo.begin() + p);
 		data.rho_o.erase(data.rho_o.begin() + p);
 		data.rho_oo.erase(data.rho_oo.begin() + p);
+
+		special.rhoTemp.erase(special.rhoTemp.begin() + p);
+
+	}
+
+	void ALESPH_Remove_particle
+	(idx p) /* There also should be type, to confirm p match right part. */
+	{
+
+		//pList.erase(pList.begin()+i);
+		np_out++;
+		particles_out.part_type.push_back(data.part_type[p]);
+		particles_out.index.push_back(data.index[p]);
+
+		particles_out.r.push_back(data.r[p]);
+		particles_out.v.push_back(data.v[p]);
+
+		particles_out.p.push_back(data.p[p]);
+		particles_out.rho.push_back(data.rho[p]);
+
+		np--;
+		data.part_type.erase(data.part_type.begin() + p);
+		data.index.erase(data.index.begin() + p); //particles are labeled from 0
+
+		data.p.erase(data.p.begin() + p);
+		data.rho.erase(data.rho.begin() + p);
+		data.drho.erase(data.drho.begin() + p); //init drho/dt with 0
+
+		data.r.erase(data.r.begin() + p);
+		data.v.erase(data.v.begin() + p);
+		data.a.erase(data.a.begin() + p);
+
+		//TEST
+		data.r_o.erase(data.r_o.begin() + p);
+		data.v_o.erase(data.v_o.begin() + p);
+		data.v_oo.erase(data.v_oo.begin() + p);
+		data.rho_o.erase(data.rho_o.begin() + p);
+		data.rho_oo.erase(data.rho_oo.begin() + p);
+
+		special.rhoTemp.erase(data.rho_o.begin() + p);
 
 	}
 

@@ -178,7 +178,7 @@ void BZ_Integrate_outlet
 				else if(particles.data.part_type[p] == outletNumber)
 				{
 					//particles.data.r[p] = particles.data.r[p] + particles.data.v[p] * dt; //update outlet p. position
-					if(particles.data.r[p].x < x_b + b_len || particles.data.r[p].y < dp/2) // change fluid particle to buffer particle
+					if(particles.data.r[p].x < x_b - b_len || particles.data.r[p].y < dp/2) // change fluid particle to buffer particle
 					{
 						particles.Remove_particle(p); //remove particle outgoing from buffer
 					}

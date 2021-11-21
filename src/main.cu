@@ -1,8 +1,11 @@
 #include "SPH_defs.h"
+#include "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/stillWater_mDBC/SPH_simulationSymplectic.h"
 
+//===================================================================//
 //===========================TEST=CASES==============================//
+//===================================================================//
 // ========= DamBreak mDBC ======== //
-#include "../cases/damBreakLong_mDBC/SPH_simulationSymplectic.h"
+//#include "../cases/damBreakLong_mDBC/SPH_simulationSymplectic.h"
 //#include "../cases/damBreakLong_mDBC/SPH_simulationVerlet.h"
 //#include "../cases/damBreakLong_mDBC/SPH_simulationLeapFrog.h"
 
@@ -11,13 +14,42 @@
 //#include "../cases/damBreakLong_DBC/SPH_simulationVerlet.h"
 //#include "../cases/damBreakLong_DBC/SPH_simulationLeapFrog.h"
 
-//===================================================================//
+// ========= DamBreak BT ======== //
+//#include "../cases/damBreakLong_BT/SPH_simulationSymplectic.h"
+//#include "../cases/damBreakLong_BT/SPH_simulationVerlet.h" /* aktualne pada */
+//#include "../cases/damBreakLong_BT/SPH_simulationLeapFrog.h" /* aktualne pada */
 
-//Ignorovat:
-// --- Still Watter mDBC --- //
+//===================================================================//
+// ====== StillWatter mDBC ======= //
 //#include "../cases/stillWater_mDBC/SPH_simulationSymplectic.h"
 //#include "../cases/stillWater_mDBC/SPH_simulationVerlet.h"
 //#include "../cases/stillWater_mDBC/SPH_simulationLeapFrog.h"
+
+// ====== StillWatter DBC ======= //
+//#include "../cases/stillWater_DBC/SPH_simulationSymplectic.h"
+//#include "../cases/stillWater_DBC/SPH_simulationVerlet.h"
+//#include "../cases/stillWater_DBC/SPH_simulationLeapFrog.h"
+
+// ====== StillWatter BT ======= //
+//#include "../cases/stillWater_BT/SPH_simulationSymplectic.h"
+//#include "../cases/stillWater_BT/SPH_simulationVerlet.h"
+
+//===================================================================//
+// ======= flowDrop mDBC ======== //
+//#include "../cases/flowDrop_mDBC/SPH_simulationSymplectic.h"
+//#include "../cases/flowDrop_mDBC/SPH_simulationLeapFrog.h"
+
+//===================================================================//
+//=======================EXPERIMENTAL=CASES===========================//
+//===================================================================//
+// ==== DamBreak mDBC-reinitialization === //
+//#include "../cases/damBreakLong_mDBC/SPH_simulationSymplectic_reinit.h"
+//#include "../cases/damBreakLong_mDBC/SPH_simulationVerlet_reinit.h"
+
+// ========= DamBreak GWBC ======== //
+//#include "../cases/damBreakLong_GWBC/SPH_simulation.h" /* zatim stale nefunguje */
+
+//===================================================================//
 
 // --- Still Watter BT --- //
 //#include "../cases/stillWater_BT/SPH_simulationSymplectic.h"
@@ -46,7 +78,15 @@
 //#include "../cases/damBreakLong_BT/SPH_simulationSymplectic.h"
 //#include "../cases/damBreakLong_BToprava/SPH_simulationSymplectic.h"
 //#include "../cases/ALESPH_dambreakLong/MUSCL.h"
-//#include "../cases/ALESPH_dambreakLong/SPH_simulationINT.h"
+
+//ALESOON
+//===================================================================//
+//===========================IN=PROGRESS=============================//
+//===================================================================//
+//#include "../cases/ALESPH_dambreakLongNEW/SPH_simulationINT.h"
+//#include "../cases/ALESPH_dambreakLongNEW/SPH_simulationINTVerlet.h"
+//#include "../cases/RSPH_damBreakLong/SPH_simulationSymplectic.h"
+//===================================================================//
 
 
 int main(){

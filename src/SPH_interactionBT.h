@@ -163,9 +163,19 @@ void Compute_Forces
 
 
 			//Assign acceleration to particle
+			if(gamma > eps)
+			{
 			particles.data.a[ai] = ac_sum/gamma - particles.data_const.graviy;
 			//particles.data.rho[ai] = drho_sum*arho + diff_sum;
 			particles.data.drho[ai] = drho_sum/gamma + diff_sum/gamma;
+			}
+			else
+			{
+			realvec zeroVec = {0., 0.};
+			particles.data.a[ai] = zeroVec - particles.data_const.graviy;
+			//particles.data.rho[ai] = drho_sum*arho + diff_sum;
+			particles.data.drho[ai] = 0;
+			}
 
 
 			//Reset temp. variables

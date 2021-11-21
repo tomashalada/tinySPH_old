@@ -120,7 +120,7 @@ void Compute_Forces
 
 				diff_term = Density_Diffusion_term_FOURTAKAS(h, drs, dr.y, drdW, arho, nrho, rho0, c0, delta, m, gravity.y);
 				//diff_term = Density_Diffusion_term_MOLTENI(h, drs, drdW, arho, nrho, c0, delta, m);
-				if(particles.data.part_type[ni] == wall){diff_term = 0.;}
+				//if(particles.data.part_type[ni] == wall){diff_term = 0.;}
 
 
 				//drho_sum += dvdW*m/nrho;

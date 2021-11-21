@@ -50,5 +50,8 @@ std::string fileName_initCond = casePATH + "OUTPUT/initialCondition.vtk"; //init
 std::string fileName_info = casePATH + "OUTPUT/simulationInfo.txt"; //simulation info
 std::string fileName_grid = casePATH + "OUTPUT/grid.vtk"; //find neighbour grid (case grid)
 
-
+// ========== MEASUREMENT CONTROL ========== //
+// ---------- hydrostatic pressure ------------ //
+std::string fileName_hp_2s = casePATH + "OUTPUT/hydrostaticPressure_2s.dat"; //water level on h1 position
+std::string fileName_hp_4s = casePATH + "OUTPUT/hydrostaticPressure_4s.dat"; //water level on h1 position
 

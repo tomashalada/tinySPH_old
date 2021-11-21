@@ -74,7 +74,10 @@ void Density_to_pressure
 			if(particles.data.part_type[p] == inlet){continue;}
 
 			if(particles.data.rho[p] > 1500. || particles.data.rho[p] < 0.)
-			{std::cout << "=== ERROR ===  Particle density too high, rho: " << particles.data.rho[p] << std::endl;}
+			{
+				std::cout << "=== ERROR ===  Particle density too high, rho: " << particles.data.rho[p] << " position r: [" << particles.data.r[p].x << "," << particles.data.r[p].y << "]" << std::endl;
+				//particles.data.rho[p] = 1000.;
+			}
 
 
 			particles.data.p[p] = Compute_Pressure(particles.data.rho[p], particles.data_const.rho0, particles.data_const.cs);
@@ -84,3 +87,5 @@ void Density_to_pressure
 
 		}
 } // function
+
+
