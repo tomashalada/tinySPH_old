@@ -4,6 +4,12 @@
 void RemoveParticlesOutOfDomain
 (Particle_system &particles, Simulation_data simulation_data)
 {
+
+
+	real x0 = simulation_data.x_0;
+	real xm = simulation_data.x_m;
+	real y0 = simulation_data.y_0;
+	real ym = simulation_data.y_m;
 	//#pragma omp parallel for schedule(static)
 	for(int p = 0; p < particles.np; p++)
 	{
@@ -13,7 +19,7 @@ void RemoveParticlesOutOfDomain
 
 			realvec r = particles.data.r[p];
 			//if(particles.data.r[p].y < simulation_data.y_0) // change fluid particle to buffer particle
-			if((r.y < (0. - eps)) || (r.y > 1.8) || (r.x < 0. - eps) || (r.x > 1.8)) // change fluid particle to buffer particle
+			if((r.y < (y0 - eps)) || (r.y > ym + eps) || (r.x < x0 - eps) || (r.x > xm - eps)) // change fluid particle to buffer particle
 			{
 
 				std::cout << " ** DEBUG **  Particle on position r = [" << r.x << "," << r.y << "]  was excluded. " << std::endl;
@@ -27,6 +33,11 @@ void RemoveParticlesOutOfDomain
 void RemoveParticlesOutOfDomain_ALE
 (Particle_system &particles, Simulation_data simulation_data)
 {
+
+	real x0 = simulation_data.x_0;
+	real xm = simulation_data.x_m;
+	real y0 = simulation_data.y_0;
+	real ym = simulation_data.y_m;
 	//#pragma omp parallel for schedule(static)
 	for(int p = 0; p < particles.np; p++)
 	{
@@ -36,7 +47,7 @@ void RemoveParticlesOutOfDomain_ALE
 
 			realvec r = particles.data.r[p];
 			//if(particles.data.r[p].y < simulation_data.y_0) // change fluid particle to buffer particle
-			if((r.y < (0. - eps)) || (r.y > 1.8) || (r.x < 0. - eps) || (r.x > 1.8)) // change fluid particle to buffer particle
+			if((r.y < (y0 - eps)) || (r.y > ym + eps) || (r.x < x0 - eps) || (r.x > xm - eps)) // change fluid particle to buffer particle
 			{
 
 				std::cout << " ** DEBUG **  Particle on position r = [" << r.x << "," << r.y << "]  was excluded. " << std::endl;
