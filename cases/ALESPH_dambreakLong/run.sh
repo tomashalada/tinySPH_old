@@ -6,9 +6,9 @@ src_path='/home/tomas/Documents/__sovler/tinySPH_double_mr/src'
 case_path='/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/ALESPH_dambreakLong/'
 
 #simulation file
-#simulation='SPH_simulationINT.h'
+simulation='SPH_simulationINT.h'
 #simulation='SPH_simulationVerlet.h'
-simulation='MUSCL.h'
+#simulation='MUSCL.h'
 
 #========================================================
 #Create output directories if necessary

@@ -69,7 +69,7 @@ std::array<real, 4> RALESPH_Boundary_pressure_approximation
 		for(int n = 0; n < particles.cells[cl].cp.size(); n++)
 		{
 
-		//if(particles.data.part_type[particles.cells[cl].cp[n]] != fluid){continue;}
+		if(particles.data.part_type[particles.cells[cl].cp[n]] != fluid){continue;}
 		//if(particles.data.part_type[particles.cells[cl].cp[n]] == wall){continue;}
 		//if(particles.data.part_type[particles.cells[cl].cp[n]] == inlet){continue;}
 
@@ -96,6 +96,7 @@ std::array<real, 4> RALESPH_Boundary_pressure_approximation
 
 		//Boundary Riemann problem
 		realvec vw = {0., 0.};
+		vw = vw  - nv;
 		realvec nb = {1., 0.};
 		real pE = np - nrho*c0*(vw.x * nb.x + vw.y*nb.y);
 

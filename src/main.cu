@@ -1,5 +1,5 @@
 #include "SPH_defs.h"
-#include "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/ALESPH_dambreakLong/MUSCL.h"
+#include "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/ALESPH_dambreakLong/SPH_simulationINT.h"
 
 //===================================================================//
 //===========================TEST=CASES==============================//

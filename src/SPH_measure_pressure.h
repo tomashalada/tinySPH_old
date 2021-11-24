@@ -9,6 +9,7 @@ real Pressure_in_point
 	real P;
 
 	P = Kernel_velocity_approximation_TEST(particles, simulation_data, ar)[1];
+	//P = Kernel_velocity_approximation_TEST_noWall(particles, simulation_data, ar)[1];
 
 	return P;
 }

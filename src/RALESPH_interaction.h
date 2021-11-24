@@ -52,6 +52,7 @@ void Compute_Forces
 		//realvec gradvy_sum = {0., 0.};
 
 		const real h = particles.data_const.h;
+		const real kappa = particles.data_const.kap;
 		const real m = particles.data_const.m;
 		const real c0 = particles.data_const.cs;
 		const real delta = particles.data_const.delta;
@@ -195,6 +196,14 @@ void Compute_Forces
 				real rhos = densRiemannLinearizedWithLimiter(arho, nrho, vL, vR, 0.5*(arho + nrho), avgc);
 				real ps = Compute_Pressure(rhos,  rho0,  c0);
 				realvec vs = drn * vss + ((av + nv)*0.5 - drn*(vL + vR)*0.5); //reconstruct
+
+				//----- Roe with pressure and limiter ----- //
+				//RowDoubleLimiter: real vss = velRiemannLinearizedwithPressureAndLimiter(rhoL, rhoR, vL, vR, ap, np, 0.5*(arho + nrho), c0, kappa*h, 9.81);
+				//RowDoubleLimiter: //real vss = velRiemannLinearized(rhoL, rhoR, vL, vR, avgrho, avgc);
+				//RowDoubleLimiter: //real rhos = densRiemannLinearized(rhoL, rhoR, vL, vR, avgrho, avgc);
+				//RowDoubleLimiter: real rhos = densRiemannLinearizedWithLimiter(arho, nrho, vL, vR, 0.5*(arho + nrho), avgc);
+				//RowDoubleLimiter: real ps = Compute_Pressure(rhos,  rho0,  c0);
+				//RowDoubleLimiter: realvec vs = drn * vss + ((av + nv)*0.5 - drn*(vL + vR)*0.5); //reconstruct
 
 				// ========== ALESPH HELP VARIABLES ========== //
 

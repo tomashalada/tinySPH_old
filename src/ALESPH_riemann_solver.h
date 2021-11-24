@@ -129,6 +129,21 @@ real velRiemannLinearizedwithPressure
 
 }
 
+real velRiemannLinearizedwithPressureAndLimiter
+(real rhoL, real rhoR, real vL, real vR, real pL, real pR, real rhoAvg, real c, real kh, real gNorm)
+{
+
+	real v;
+	real alpha = (fabs(pL - pR) <= gNorm*kh ? 0. : 1.);
+
+	v = 0.5*(vR + vL) + 0.5*alpha*(pL - pR)/(c*rhoAvg);
+
+	/// v = 0.5*(vR + vL);// + 0.5*(pL - pR)/(0.5*c*rhoAvg);
+
+	return v;
+
+}
+
 //help function
 real cs
 (real rho, real rho0, real c0)
@@ -259,3 +274,18 @@ real vVFRoeTurkel
 	return v;
 
 }
+
+//:NEW real velocityFillWithLimiter
+//:NEW (real rhoL, real rhoR, real vL, real vR, real pL, real pR, real rhoAvg, real c, real kh, real gNorm)
+//:NEW {
+//:NEW
+//:NEW 	real v;
+//:NEW 	real alpha = (fabs(pL - pR) <= gNorm*kh ? 0. : 1.);
+//:NEW
+//:NEW 	v = 0.5*(vR + vL) + 0.5*(pL - pR)/(c*rhoAvg);
+//:NEW
+//:NEW 	/// v = 0.5*(vR + vL);// + 0.5*(pL - pR)/(0.5*c*rhoAvg);
+//:NEW
+//:NEW 	return v;
+//:NEW
+//:NEW }

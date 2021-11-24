@@ -23,7 +23,7 @@ const real dt = 0.00004; //time step (initial time step)
 const	int nvl = std::ceil(kap*hh/dp); //number of boundary layers for ghost/virtual layer based BC
 
 // ========== SPH CONSTANTS ========== //
-const	real cs = 44.3; //speed of sound
+const	real cs = 34.3; //speed of sound
 const real visco = 0.02; //viscosity (coef. of artificial viscosity for WCSPH, viscosity value otherwise)
 const	real delta = 0.1; //delta-SPH constant
 
