@@ -19,7 +19,7 @@ mkdir case_compiled
 #Compile and rund case
 cd ${src_path}
 sed -i '2 s|.*|#include "'${case_path}${simulation}'"|' main.cu
-make
+make > ${case_path}'/OUTPUT/compilation_info.txt'
 cp main ${case_path}'case_compiled'
 cd ${case_path}'case_compiled'
 ./main

@@ -9,10 +9,11 @@
 #include "SPH_integration.h"
 #include "SPH_output_info.h"
 #include "draw_geometry.h"
-#include "SPH_mDBC.h"
+//#include "SPH_mDBC.h"
 #include "SPH_btdebug.h"
 
 #include "SPH_measure_pressure.h"
+#include "SPH_measure_energy.h"
 
 //#include "SPH_moving_boundary.h"
 //#include "SPH_inlet_outlet.h" //inlet, outlet, functions
@@ -154,6 +155,9 @@ struct SPH_simulation
 		{Output_hydrostatic_pressure(particles, fileName_hp_2s);}
 		if(step == 20000)
 		{Output_hydrostatic_pressure(particles, fileName_hp_4s);}
+
+		real Ekintot = Total_kinetic_energy(particles);
+		Write_kinetic_energy(step*dt, Ekintot, fileName_EkinTot);
 
 		} // Main time loop.
 	} // RUN function

@@ -122,8 +122,8 @@ void Compute_Forces
 				// ========== CONTINUITY EQN ========== //
 				real diff_term = 0; // delta diffusion term
 
-				//diff_term = Density_Diffusion_term_FOURTAKAS(h, drs, dr.y, drdW, arho, nrho, rho0, c0, delta, m, gravity.y);
-				diff_term = Density_Diffusion_term_MOLTENI(h, drs, drdW, arho, nrho, c0, delta, m);
+				diff_term = Density_Diffusion_term_FOURTAKAS(h, drs, dr.y, drdW, arho, nrho, rho0, c0, delta, m, gravity.y);
+				//diff_term = Density_Diffusion_term_MOLTENI(h, drs, drdW, arho, nrho, c0, delta, m);
 				//if(particles.data.part_type[ni] == wall){diff_term = 0.;}
 
 				//drho_sum += dvdW*m/nrho;

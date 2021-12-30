@@ -75,4 +75,13 @@ void Write_pressure
 	fileWL.close();
 }
 
+void Write_kinetic_energy
+(real step, real p, std::string output_file_name_p)
+{
+	std::ofstream fileWL;
+	fileWL.open(output_file_name_p, std::ios_base::app);
+	fileWL << step << " " << p << std::endl;
+	fileWL.close();
+}
+
 

@@ -18,7 +18,7 @@ const real hh = 1.0*sqrt(2*dp*dp); //smoothing length
 //const real hh = 2.*dp; //smoothing length
 
 //const real dt = 0.0001; //time step (initial time step)
-const real dt = 0.00005; //time step (initial time step)
+const real dt = 0.00004; //time step (initial time step)
 
 const	int nvl = std::ceil(kap*hh/dp); //number of boundary layers for ghost/virtual layer based BC
 
@@ -31,10 +31,10 @@ const	real delta = 0.1; //delta-SPH constant
 const real t_max = 2.; //NOW ACTIVE YET
 
 unsigned int step = 0; //Time in steps
-const unsigned int step_end = 45001; //Endtime in steps;
+const unsigned int step_end = 50000; //Endtime in steps;
 
-const unsigned int save_output_interval = 200; //Interval to save results
-const unsigned int save_output_interval_interpolated = 1000; //Interval to save interpolated results
+const unsigned int save_output_interval = 250; //Interval to save results
+const unsigned int save_output_interval_interpolated = 2500; //Interval to save interpolated results
 
 // ========== SIMULATION CONTROL ========== //
 
@@ -80,7 +80,7 @@ realvec wl_h4_pos_inv = {1.3625, 0.45}; // position of water level h1 sensore
 std::string fileName_waterLevel_h4_inv = casePATH + "OUTPUT/waterLevel_h4_inv.dat"; //water level on h1 position
 
 // ---------- pressure ------------ //
-const unsigned int save_pressure_interval = 10; //Interval to save results
+const unsigned int save_pressure_interval = 15; //Interval to save results
 realvec p_h1_pos = {1.61, 0.003}; // position of water level h1 sensore
 std::string fileName_waterLevel_p1 = casePATH + "OUTPUT/pressure_p1.dat"; //water level on h1 position
 

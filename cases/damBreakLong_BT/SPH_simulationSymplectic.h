@@ -168,19 +168,19 @@ struct SPH_simulation
 			real wl_h1 = Water_Elevation(particles, simulation_data, wl_h1_pos.x, wl_h1_pos.y);
 			Write_water_level(step*dt*timeCoef, wl_h1/0.3, fileName_waterLevel_h1);
 
-			real wl_h1_inv = Water_Elevation_inverse(particles, simulation_data, wl_h1_pos.x, wl_h1_pos.y);
+			real wl_h1_inv = Water_Elevation_inverse(particles, simulation_data, wl_h1_pos_inv.x, wl_h1_pos_inv.y);
 			Write_water_level(step*dt*timeCoef, wl_h1_inv/0.3, fileName_waterLevel_h1_inv);
 
 			real wl_h2 = Water_Elevation(particles, simulation_data, wl_h2_pos.x, wl_h2_pos.y);
 			Write_water_level(step*dt*timeCoef, wl_h2/0.3, fileName_waterLevel_h2);
 
-			real wl_h2_inv = Water_Elevation_inverse(particles, simulation_data, wl_h2_pos.x, wl_h2_pos.y);
+			real wl_h2_inv = Water_Elevation_inverse(particles, simulation_data, wl_h2_pos_inv.x, wl_h2_pos_inv.y);
 			Write_water_level(step*dt*timeCoef, wl_h2_inv/0.3, fileName_waterLevel_h2_inv);
 
 			real wl_h3 = Water_Elevation(particles, simulation_data, wl_h3_pos.x, wl_h3_pos.y);
 			Write_water_level(step*dt*timeCoef, wl_h3/0.3, fileName_waterLevel_h3);
 
-			real wl_h3_inv = Water_Elevation_inverse(particles, simulation_data, wl_h3_pos.x, wl_h3_pos.y);
+			real wl_h3_inv = Water_Elevation_inverse(particles, simulation_data, wl_h3_pos_inv.x, wl_h3_pos_inv.y);
 			Write_water_level(step*dt*timeCoef, wl_h3_inv/0.3, fileName_waterLevel_h3_inv);
 
 			real wl_h4 = Water_Elevation(particles, simulation_data, wl_h4_pos.x, wl_h4_pos.y);
@@ -207,6 +207,7 @@ struct SPH_simulation
 			real p_h4 = Pressure_in_point(particles, simulation_data, p_h4_pos);
 			Write_water_level(step*dt*timeCoef, p_h4*pCoef, fileName_waterLevel_p4);
 		}
+
 
 
 		} // Main time loop.

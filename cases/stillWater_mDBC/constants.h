@@ -32,8 +32,8 @@ const real t_max = 4.; //NOW ACTIVE YET
 unsigned int step = 0; //Time in steps
 const unsigned int step_end = 20001; //Endtime in steps;
 
-const unsigned int save_output_interval = 200; //Interval to save results
-const unsigned int save_output_interval_interpolated = 1000; //Interval to save interpolated results
+const unsigned int save_output_interval = 2000; //Interval to save results
+const unsigned int save_output_interval_interpolated = 10000; //Interval to save interpolated results
 
 // ========== SIMULATION CONTROL ========== //
 
@@ -54,4 +54,6 @@ std::string fileName_grid = casePATH + "OUTPUT/grid.vtk"; //find neighbour grid 
 // ---------- hydrostatic pressure ------------ //
 std::string fileName_hp_2s = casePATH + "OUTPUT/hydrostaticPressure_2s.dat"; //water level on h1 position
 std::string fileName_hp_4s = casePATH + "OUTPUT/hydrostaticPressure_4s.dat"; //water level on h1 position
+
+std::string fileName_EkinTot = casePATH + "OUTPUT/EkinTot.dat"; //water level on h1 position
 

@@ -9,8 +9,8 @@
 		Create_corner_mdbc(particles, -1, -1, {0. + dp/2, 0. + dp/2});
 		Create_corner_mdbc(particles, +1, -1, {0.8 - dp/2, 0. + dp/2});
 
-		Create_Block_of_Fluid(particles, 0 + dp, 0 + dp, 0.8-dp, 0.5);
-		//Create_Block_of_FluidWP(particles, 0 + dp, 0 + dp, 0.8-dp, 0.5);
+		//Create_Block_of_Fluid(particles, 0 + dp, 0 + dp, 0.8-dp, 0.5);
+		Create_Block_of_FluidWP(particles, 0 + dp, 0 + dp, 0.8-dp, 0.5);
 
 		// NARROW BOX
 		// Create_Wall_x_mdbc(particles, 0.+dp , 0.3, 0. , -1, dp/2);

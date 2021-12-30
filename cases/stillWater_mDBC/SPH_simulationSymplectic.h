@@ -13,6 +13,7 @@
 #include "SPH_btdebug.h"
 
 #include "SPH_measure_pressure.h"
+#include "SPH_measure_energy.h"
 
 //#include "SPH_moving_boundary.h"
 //#include "SPH_inlet_outlet.h" //inlet, outlet, functions
@@ -89,7 +90,7 @@ struct SPH_simulation
 		std::cout << "SIMULATION -> RUN: Second part integraion. DONE. " << std::endl;
 
 		/* Apply mDBC, compute pressure */
-		mDBC_compute_density_mdbcGeo(particles, simulation_data);
+		//mDBC_compute_density_mdbcGeo(particles, simulation_data);
 		//Density_to_pressure(particles);
 		//std::cout << "SIMULATION -> RUN: Compute density. DONE. " << std::endl;
 
@@ -154,6 +155,11 @@ struct SPH_simulation
 		{Output_hydrostatic_pressure(particles, fileName_hp_2s);}
 		if(step == 20000)
 		{Output_hydrostatic_pressure(particles, fileName_hp_4s);}
+
+		real Ekintot = Total_kinetic_energy(particles);
+		Write_kinetic_energy(step*dt, Ekintot, fileName_EkinTot);
+
+
 
 		} // Main time loop.
 	} // RUN function

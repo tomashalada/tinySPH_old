@@ -667,7 +667,10 @@ real determinant(real a11, real a12, real a13,
 
 	//return a11*a22*a33 + a21*a32*a13 + a31*a21*a23 - a13*a22*a31 - a23*a32*a11 - a33*a12*a21;
 	//std::cout << "----> DET DIF: " << (a11*a22*a33 + a21*a32*a13 + a31*a12*a23 - a13*a22*a31 - a23*a32*a11 - a33*a12*a21) - (a11*(a22*a33 - a23*a32) + a21*(a23*a13 - a12*a33) + a31*(a12*a23 - a22*a13)) << std::endl;
-	return (a11*(a22*a33 - a23*a32) + a21*(a23*a13 - a12*a33) + a31*(a12*a23 - a22*a13));
+
+	//return (a11*(a22*a33 - a23*a32) + a21*(a23*a13 - a12*a33) + a31*(a12*a23 - a22*a13));
+
+return(a11 * a22 * a33 + a12 * a23 * a31 + a13 * a21 * a32 - a31 * a22 * a13 - a32 * a23 * a11 - a33 * a21 * a12);
 
 }
 
@@ -2040,7 +2043,7 @@ real GWBC_pressure_approximation
 		real W = kernel[0];
 
 		Wsum += kernel[0];
-		PWsum += np*W + nrho*W*(g.y*dr.y);
+		PWsum += np*W - nrho*W*(g.y*dr.y);
 
 		/* Debug */
 		//std::cout << "KERNEL. APROX: nv: [" << nv.x << "," << nv.y << "]" << std::endl;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SPH_defs.h"
+#include "SPH_pressure.h"
 
 // ========== ARTIFICIAL VISCOSITY ========== //
 real Artificial_Viscosity
@@ -49,7 +50,7 @@ real Density_Diffusion_term_FOURTAKAS
 	real PSI_s; //psi scalar (without dr)
 
 	const real cb = c0 * c0 * rho0 / 7.;
-	const real dpH = 1. + dr_z * gravity / cb;
+	const real dpH = 1. + dr_z * rho0 * gravity / cb;
 	const real drhoH = rho0 * pow(dpH, 1./7) - rho0;
 
 	PSI_s = 2. * c0 * h * delta * ((nrho - arho) - drhoH) / (drs*drs + eps*h*h);
@@ -58,3 +59,4 @@ real Density_Diffusion_term_FOURTAKAS
 	return DT;
 
 }
+
