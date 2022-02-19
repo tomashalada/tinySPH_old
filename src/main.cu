@@ -1,5 +1,5 @@
 #include "SPH_defs.h"
-#include "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/damBreakLong_mDBC/SPH_simulationSymplectic.h"
+#include "/home/tomas/Documents/__sovler/tinySPH_double_mr/cases/RSPH_stillWater/SPH_simulationSymplectic.h"
 
 //===================================================================//
 //===========================TEST=CASES==============================//

@@ -126,12 +126,13 @@ void Compute_Forces
 				{
 					realvec nb = particles.special.n[ni];
 				 real	drn = dr.x*nb.x + dr.y*nb.y;
+					if(nr.x == 0.8 && nr.y == 0) {std::cout << " nx: " << nb.x << "," << nb.y << std::endl;}
 
 					realvec rwf = dr;
 
 					vL = (-1)*( av.x * nb.x + av.y * nb.y );
 					vR = -vL;
-					pR = ap + arho*(-1)*(particles.data_const.graviy.y*rwf.y);
+					pR = ap + arho*(+1)*(particles.data_const.graviy.y*rwf.y);
 
 					ps = pRiemannLinearized(arho, nrho, vL, vR, ap, pR, 0.5*(arho + nrho), c0);
 				 //ps = pRiemannLinearizedWithLimiter(arho, nrho, vL, vR, ap, np, 0.5*(arho + nrho), c0);
@@ -153,7 +154,18 @@ void Compute_Forces
 					realvec nb = particles.special.n[ni];
 					real dvn = dvs.x*nb.x + dvs.y*nb.y;
 
-					drho_sum -=  2.*nrho*dvn*W*dp;
+					//Experiment:
+					realvec rwf = dr;
+					pR = ap + arho*(+1)*(particles.data_const.graviy.y*rwf.y);
+					vL = (-1)*( av.x * nb.x + av.y * nb.y );
+					vR = -vL;
+					real vss = velRiemannLinearizedwithPressure(arho, nrho, vL, vR, ap, pR, 0.5*(arho + nrho), c0);
+					realvec vs = drn * vss + ((av + nv)*0.5 - drn*(vL + vR)*0.5); //reconstruct
+					dvs = av - vs;
+					real dvsdW = dvs.x*dW.x + dvs.y*dW.y;
+
+					//default: drho_sum -=  2.*nrho*dvn*W*dp;
+					drho_sum += 2.*dvsdW*m;
 				}
 				else
 				{
